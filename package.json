@@ -1,0 +1,33 @@
+{
+  "name": "ascii-grid",
+  "version": "0.0.0",
+  "description": "Identify and Read an ARC/INFO ASCII Grid",
+  "main": "src",
+  "scripts": {
+    "test": "ava"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DanielJDufour/ascii-grid.git"
+  },
+  "keywords": [
+    "arc",
+    "ascii",
+    "arcgis",
+    "asc",
+    "esri",
+    "info",
+    "geospatial",
+    "gis",
+    "grid"
+  ],
+  "author": "Daniel J. Dufour",
+  "license": "CC0-1.0",
+  "bugs": {
+    "url": "https://github.com/DanielJDufour/ascii-grid/issues"
+  },
+  "homepage": "https://github.com/DanielJDufour/ascii-grid#readme",
+  "devDependencies": {
+    "ava": "^3.10.1"
+  }
+}
