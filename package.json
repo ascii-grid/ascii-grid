@@ -4,6 +4,7 @@
   "description": "Identify and Read an ARC/INFO ASCII Grid",
   "main": "src",
   "scripts": {
+    "format": "npx prettier --write test.js src/*.js",
     "test": "ava"
   },
   "repository": {
