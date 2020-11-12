@@ -35,8 +35,7 @@ module.exports = (input, options = {}) => {
   if (typeof input === "string") {
     if (debug) console.log("input is a string");
     return (
-      input.endsWith(".asc") ||
-      input.endsWith(".ASC") ||
+      Boolean(input.match(/.asc(.gz|.tar|.tar.gz|.tgz|.zip)?$/i)) ||
       (input.includes("ncols") && input.includes("nrows"))
     );
   } else {
