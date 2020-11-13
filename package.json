@@ -1,6 +1,6 @@
 {
   "name": "ascii-grid",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Identify and Read an ARC/INFO ASCII Grid",
   "main": "src",
   "scripts": {
