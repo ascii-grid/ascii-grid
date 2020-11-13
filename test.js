@@ -16,7 +16,8 @@ test("identifying ascii grid file extensions", async (t) => {
 test("identifying ascii grid file", async (t) => {
   const buffer = readFileSync("./test_data/michigan_lld/michigan_lld.asc");
   const bufferIsAsciiGrid = isAsciiGrid(buffer, { debug: false });
-  t.is(bufferIsAsciiGrid, true);
+  t.true(bufferIsAsciiGrid);
+  t.true(isAsciiGrid(Uint8Array.from(buffer)));
 });
 
 test("reading ascii metadata", async (t) => {

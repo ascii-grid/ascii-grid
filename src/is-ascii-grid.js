@@ -1,10 +1,10 @@
-const MAX_READ_LENGTH = 500;
-
 module.exports = (input, options = {}) => {
   const debug = options.debug || false;
+  const max_read_length = options.max_read_length || 500;
+
   if (typeof Buffer !== "undefined" && Buffer.isBuffer(input)) {
     if (input.toString) {
-      input = input.toString("utf8", 0, MAX_READ_LENGTH);
+      input = input.toString("utf8", 0, max_read_length);
       if (debug) console.log("converted input to a string");
     } else {
       return false;
@@ -17,7 +17,7 @@ module.exports = (input, options = {}) => {
 
   if (input instanceof DataView) {
     const decoded = "";
-    const length = Math.min(MAX_READ_LENGTH, input.byteLength);
+    const length = Math.min(max_read_length, input.byteLength);
     for (let i = 0; i < length; i++) {
       decoded += String.fromCharCode(input.getUint8(i));
     }
@@ -25,8 +25,8 @@ module.exports = (input, options = {}) => {
   }
 
   if (input instanceof Uint8Array) {
-    const decoded = "";
-    for (let i = 0; i < Math.min(MAX_READ_LENGTH, input.length); i++) {
+    let decoded = "";
+    for (let i = 0; i < Math.min(max_read_length, input.length); i++) {
       decoded += String.fromCharCode(input[i]);
     }
     input = decoded;
