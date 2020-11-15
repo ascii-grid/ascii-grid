@@ -16,7 +16,7 @@ module.exports = (input, options = {}) => {
   if (input instanceof ArrayBuffer) input = new DataView(input);
 
   if (input instanceof DataView) {
-    const decoded = "";
+    let decoded = "";
     const length = Math.min(max_read_length, input.byteLength);
     for (let i = 0; i < length; i++) {
       decoded += String.fromCharCode(input.getUint8(i));

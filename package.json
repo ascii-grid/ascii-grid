@@ -5,7 +5,7 @@
   "main": "src",
   "scripts": {
     "format": "npx prettier --write test.js src/*.js",
-    "test": "ava"
+    "test": "npx ava"
   },
   "repository": {
     "type": "git",
@@ -29,6 +29,6 @@
   },
   "homepage": "https://github.com/DanielJDufour/ascii-grid#readme",
   "devDependencies": {
-    "ava": "^3.10.1"
+    "toab": "^1.0.1"
   }
 }

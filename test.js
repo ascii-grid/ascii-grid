@@ -1,5 +1,6 @@
 const { readFileSync } = require("fs");
 const test = require("ava");
+const toab = require("toab");
 
 const isAsciiGrid = require("./src/is-ascii-grid");
 const parseAsciiGridMetaData = require("./src/parse-ascii-grid-meta");
@@ -9,15 +10,15 @@ test("identifying ascii grid file extensions", async (t) => {
   t.true(isAsciiGrid("michigan_lld.asc.tar"));
   t.true(isAsciiGrid("michigan_lld.asc.tar.gz"));
   t.true(isAsciiGrid("michigan_lld.asc.zip"));
-
   t.false(isAsciiGrid("michigan_lld.asc.json"));
 });
 
-test("identifying ascii grid file", async (t) => {
+test("identifying ascii grid file from buffers", async (t) => {
   const buffer = readFileSync("./test_data/michigan_lld/michigan_lld.asc");
   const bufferIsAsciiGrid = isAsciiGrid(buffer, { debug: false });
   t.true(bufferIsAsciiGrid);
   t.true(isAsciiGrid(Uint8Array.from(buffer)));
+  t.true(isAsciiGrid(toab(buffer)));
 });
 
 test("reading ascii metadata", async (t) => {
