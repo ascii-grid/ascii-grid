@@ -1,10 +1,9 @@
-:warning: Work in Progress.  This library is under active development and is not ready for production yet.
-
-# ascii-grid
+# ascii-grid: beta
 Identify and Read an ARC/INFO ASCII Grid
 
 # usage
 ## identify ascii grid files
+isAsciiGrid identifies ASCII GRID files in the following formats: ArrayBuffer, Buffer, DataView, Promise, String, and Uint8Array
 ```javascript
 const isAsciiGrid = require("ascii-grid/is-ascii-grid");
 
@@ -26,10 +25,17 @@ const metadata = parseAsciiGridMeta(buffer, { debug: false });
   xllcenter: -88,
   yllcenter: 41.62,
   cellsize: 0.0008333333333,
-  nodata_value: -9999
+  nodata_value: -9999,
+  last_metadata_line: 5,
+  last_metadata_byte: 95
 }
 */
 ```
 
 ## Reading Pixel Values
-Coming Soon!
+```javascript
+const parseAsciiGridData = require("ascii-grid/parse-ascii-grid-data");
+
+const result = await parseAsciiGridData({ data: buffer, debug: true });
+// result is a two-dimensional array of rows with pixel values
+```
