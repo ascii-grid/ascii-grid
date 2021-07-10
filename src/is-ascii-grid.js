@@ -35,10 +35,7 @@ module.exports = async ({ data, debug = false, max_read_length = 500 }) => {
 
   if (typeof data === "string") {
     if (debug) console.log("data is a string");
-    return (
-      Boolean(data.match(/.asc(.gz|.tar|.tar.gz|.tgz|.zip)?$/i)) ||
-      (data.includes("ncols") && data.includes("nrows"))
-    );
+    return Boolean(data.match(/.asc(.gz|.tar|.tar.gz|.tgz|.zip)?$/i)) || (data.includes("ncols") && data.includes("nrows"));
   } else {
     return false;
   }

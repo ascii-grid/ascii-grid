@@ -6,68 +6,111 @@ const SPACE_CHARCODE = " ".charCodeAt(0);
 const MINUS_CHARCODE = "-".charCodeAt(0);
 const ZERO_CHARCODE = "0".charCodeAt(0);
 const NINE_CHARCODE = "9".charCodeAt(0);
-// const NULL_CHARACTER = "\u0000".charCodeAt(0);
+const DOT_CHARCODE = ".".charCodeAt(0);
+const NULL_CHARCODE = 0;
 
-module.exports = async ({
+/*
+  Notes: .asc files can end with a newline, null byte, or number
+*/
+
+module.exports = ({
   assume_clean = true,
-  debug = false,
+  debug_level = 0,
   data,
   max_read_length = Infinity,
   start_of_data_byte,
+  start_column = 0,
+  end_column, // index of last column (using zero-based index)
+  start_row = 0,
+  end_row, // index of last row (using zero-based index)
   meta
 }) => {
+  if (debug_level >= 1) console.time("[asci-grid] parse-ascii-grid-data took");
   const result = {};
   const table = [];
   let row = [];
   let num = "";
 
   const read_length = Math.min(data.length, max_read_length);
-  if (debug) console.log("[ascii-grid/get-values] read_length:", read_length);
+  if (debug_level >= 1) console.log("[ascii-grid/parse-ascii-grid-data] read_length:", read_length);
 
-  let i =
-    start_of_data_byte ||
-    (meta && meta.last_metadata_byte + 1) ||
-    (await parseAsciiGridMetaData({ data })).last_metadata_byte + 1;
+  if (!meta) meta = parseAsciiGridMetaData({ data });
+  if (debug_level >= 1) console.log("[ascii-grid/parse-ascii-grid-data] meta:", meta);
 
-  if (debug) console.log("[ascii-grid/get-values] i:", i);
+  if (!end_row) end_row = meta.nrows - 1;
+  if (debug_level >= 1) console.log("[ascii-grid/parse-ascii-grid-data] end_row:", end_row);
 
-  while (i < read_length - 1) {
-    i++;
-    const byte = getByte(data, i);
+  if (!end_column) end_column = meta.ncols - 1;
+  if (debug_level >= 1) console.log("[ascii-grid/parse-ascii-grid-data] end_column:", end_column);
 
-    if (byte === NEWLINE_CHARCODE) {
-      if (num !== "") row.push(parseFloat(num));
+  let i = start_of_data_byte !== undefined ? start_of_data_byte : meta.last_metadata_byte + 1;
+  if (debug_level >= 1) console.log("[ascii-grid/parse-ascii-grid-data] i:", i);
+
+  // index of current row
+  let r = 0;
+
+  // index of current column
+  let c = 0;
+
+  // previous character
+  let prev;
+
+  while (i <= read_length) {
+    // add phantom null byte to end, because of the processing algo
+    const byte = i === read_length ? NULL_CHARCODE : getByte(data, i);
+
+    if (debug_level >= 2) console.log("[ascii-grid/parse-ascii-grid-data] i, byte:", [i, String.fromCharCode(byte)]);
+
+    if (byte === SPACE_CHARCODE || byte === NEWLINE_CHARCODE || byte === NULL_CHARCODE) {
+      if (prev === SPACE_CHARCODE || prev === NEWLINE_CHARCODE || prev === NULL_CHARCODE) {
+        // don't do anything because have reached weird edge case
+        // where file has two white space characters in a row
+        // for example, a new line + space before the start of the next row's data
+        prev = byte;
+        i++;
+        continue;
+      }
+
+      if (num !== "" && c >= start_column && c <= end_column) {
+        row.push(parseFloat(num));
+      } else {
+        if (debug_level >= 2) console.log("[ascii-grid/parse-ascii-grid-data] skipping value at [", r, "][", c, "]");
+      }
+
       num = "";
-      table.push(row);
-      row = [];
-    } else if (byte === SPACE_CHARCODE) {
-      if (num !== "") row.push(parseFloat(num));
-      num = "";
+
+      // reached end of the row
+      if (c == meta.ncols - 1) {
+        if (r >= start_row && r <= end_row) {
+          table.push(row);
+        }
+        r++;
+        c = 0;
+        row = [];
+      } else {
+        c++;
+      }
     } else if (
       assume_clean ||
       byte === MINUS_CHARCODE ||
       byte === ZERO_CHARCODE ||
       byte === NINE_CHARCODE ||
+      byte === DOT_CHARCODE ||
       (byte > ZERO_CHARCODE && byte < NINE_CHARCODE)
     ) {
       num += String.fromCharCode(byte);
+    } else if (debug_level >= 2) {
+      console.error("[ascii-grid/parse-ascii-grid-data]: unknown byte", [byte]);
     }
+
+    prev = byte;
+    i++;
   }
-
-  // special case is the last byte because sometimes it's a null-byte (0)
-  const lastByte = getByte(data, read_length - 1);
-  if (debug) console.log("[ascii-grid/get-values] lastByte:", [lastByte]);
-  if (lastByte >= ZERO_CHARCODE && lastByte <= NINE_CHARCODE) {
-    num += String.fromCharCode(lastByte);
-  }
-
-  if (num !== "") row.push(num) && table.push(row);
-
-  result.end_of_data_byte = i;
 
   result.values = table;
 
-  if (debug) console.log("[ascii-grid/get-values] finishing");
+  if (debug_level >= 1) console.log("[ascii-grid/parse-ascii-grid-data] finishing");
 
+  if (debug_level >= 1) console.timeEnd("[asci-grid] parse-ascii-grid-data took");
   return result;
 };

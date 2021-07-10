@@ -103,5 +103,5 @@ dist
 # TernJS port file
 .tern-port
 
-test_data/*/*.asc
-test_data/*/*.prj
+test_data/*/*
+*bak*

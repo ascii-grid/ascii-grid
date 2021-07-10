@@ -4,8 +4,8 @@
   "description": "Identify and Read an ARC/INFO ASCII Grid",
   "main": "src",
   "scripts": {
-    "format": "prettier --arrow-parens=avoid --trailing-comma=none --write test.js src/*.js",
-    "test": "ava --timeout=2m --verbose"
+    "format": "prettier --arrow-parens=avoid --print-width=160 --trailing-comma=none --write test.js src/*.js",
+    "test": "node test.js"
   },
   "repository": {
     "type": "git",
@@ -29,9 +29,9 @@
   },
   "homepage": "https://github.com/DanielJDufour/ascii-grid#readme",
   "devDependencies": {
-    "ava": "^3.14.0",
     "fast-max": "0.0.0",
     "fast-min": "0.0.0",
+    "flug": "^1.1.0",
     "prettier": "^2.2.1",
     "toab": "^1.0.2"
   },

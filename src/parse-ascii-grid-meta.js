@@ -1,6 +1,6 @@
 const getByte = require("get-byte");
 
-module.exports = async ({ data, debug = false, max_read_length = 500 }) => {
+module.exports = ({ data, debug = false, max_read_length = 500 }) => {
   const result = {};
 
   let i = 0;
@@ -19,9 +19,7 @@ module.exports = async ({ data, debug = false, max_read_length = 500 }) => {
       line = null;
       line_count++;
     } else if (line === null) {
-      if (
-        ["-", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].includes(char)
-      ) {
+      if (["-", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].includes(char)) {
         break;
       } else {
         line = char;
