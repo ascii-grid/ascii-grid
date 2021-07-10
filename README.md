@@ -1,5 +1,10 @@
 # ascii-grid: beta
-Identify and Read an ARC/INFO ASCII Grid
+> Identify and Read an ARC/INFO ASCII Grid
+
+# motivation
+I do a lot of client-side geoprocessing (see [geoblaze](http://github.com/geotiff/geoblaze)) and wanted to add support for .asc files.
+When I encountered large .asc files, I quickly ran out of memory because I was trying to load the whole file into memory.
+This package was created to make it easy to read specific areas of an ASCII Grid in a memory-safe way and prevent my laptop from overheating.
 
 # usage
 ## identify ascii grid files
