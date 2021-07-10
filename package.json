@@ -2,7 +2,13 @@
   "name": "ascii-grid",
   "version": "1.0.0",
   "description": "Identify and Read an ARC/INFO ASCII Grid",
-  "main": "src",
+  "main": "src/index.js",
+  "files": [
+    "src/index.js",
+    "src/is-ascii-grid.js",
+    "src/parse-ascii-grid-data.js",
+    "src/parse-ascii-grid-meta.js"
+  ],
   "scripts": {
     "format": "prettier --arrow-parens=avoid --print-width=160 --trailing-comma=none --write test.js src/*.js",
     "test": "node test.js"
@@ -36,7 +42,6 @@
     "toab": "^1.0.2"
   },
   "dependencies": {
-    "get-byte": "0.0.0",
-    "to-typed-array": "0.0.1"
+    "get-byte": "0.0.0"
   }
 }
