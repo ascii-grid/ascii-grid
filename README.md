@@ -6,6 +6,11 @@ I do a lot of client-side geoprocessing (see [geoblaze](http://github.com/geotif
 When I encountered large .asc files, I quickly ran out of memory because I was trying to load the whole file into memory.
 This package was created to make it easy to read specific areas of an ASCII Grid in a memory-safe way and prevent my laptop from overheating.
 
+# install
+```bash
+npm install ascii-grid
+```
+
 # usage
 ## identify ascii grid files
 isAsciiGrid identifies ASCII GRID files in the following formats: ArrayBuffer, Buffer, DataView, Promise, String, and Uint8Array
