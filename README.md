@@ -91,3 +91,22 @@ const result = await parseAsciiGridData({
   }
 */
 ```
+
+## Reading Pixel Values into a Flat Array
+Sometimes you may require the data to be returned in a one-dimensional flat array
+instead of split up into rows.  To do so, set flat to true like below
+```javascript
+const parseAsciiGridData = require("ascii-grid/parse-ascii-grid-data");
+
+const result = await parseAsciiGridData({
+  data: buffer,
+  flat: true
+});
+
+/*
+ result's values array is as long as width * height
+ {
+   values: [55.874908, 57.874924, 58.874939, ...]
+  }
+*/
+```

@@ -253,3 +253,29 @@ test("bbox", async ({ eq }) => {
   eq(new Set(result.values.flat()).size, new Set(datalines.flat()).size);
   console.timeEnd("reading box of ascii values");
 });
+
+test("flat", async ({ eq }) => {
+  console.time("reading flat");
+  const buffer = readFileSync(MICHIGAN_FILEPATH);
+
+  const start_row = 100;
+  const end_row = 200;
+  const start_column = 100;
+  const end_column = 200;
+
+  const result = parseAsciiGridData({
+    data: buffer,
+    start_row,
+    end_row,
+    start_column,
+    end_column,
+    flat: true
+  });
+
+  const height = end_row - start_row + 1;
+  const width = end_column - start_column + 1;
+
+  eq(result.values.length, width * height);
+  eq(new Set(result.values.slice(-1 * width)).size, 94);
+  console.timeEnd("reading flat");
+});

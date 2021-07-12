@@ -23,13 +23,17 @@ module.exports = ({
   end_column, // index of last column (using zero-based index)
   start_row = 0,
   end_row, // index of last row (using zero-based index)
-  meta
+  meta,
+  flat = false
 }) => {
   if (debug_level >= 1) console.time("[asci-grid] parse-ascii-grid-data took");
   const result = {};
   const table = [];
   let row = [];
-  let num = "";
+  let numstr = "";
+
+  if (end_column < start_column) throw new Error("[ascii-grid/parse-ascii-grid-data] end_column must be greater than or equal to start_column");
+  if (end_row < start_row) throw new Error("[ascii-grid/parse-ascii-grid-data] end_row must be greater than or equal to start_row");
 
   const read_length = Math.min(data.length, max_read_length);
   if (debug_level >= 1) console.log("[ascii-grid/parse-ascii-grid-data] read_length:", read_length);
@@ -71,17 +75,24 @@ module.exports = ({
         continue;
       }
 
-      if (num !== "" && c >= start_column && c <= end_column) {
-        row.push(parseFloat(num));
+      if (numstr !== "" && c >= start_column && c <= end_column) {
+        const num = parseFloat(numstr);
+        if (flat) {
+          if (r >= start_row && r <= end_row) {
+            table.push(num);
+          }
+        } else {
+          row.push(num);
+        }
       } else {
         if (debug_level >= 2) console.log("[ascii-grid/parse-ascii-grid-data] skipping value at [", r, "][", c, "]");
       }
 
-      num = "";
+      numstr = "";
 
       // reached end of the row
       if (c == meta.ncols - 1) {
-        if (r >= start_row && r <= end_row) {
+        if (!flat && r >= start_row && r <= end_row) {
           table.push(row);
         }
         r++;
@@ -98,7 +109,7 @@ module.exports = ({
       byte === DOT_CHARCODE ||
       (byte > ZERO_CHARCODE && byte < NINE_CHARCODE)
     ) {
-      num += String.fromCharCode(byte);
+      numstr += String.fromCharCode(byte);
     } else if (debug_level >= 2) {
       console.error("[ascii-grid/parse-ascii-grid-data]: unknown byte", [byte]);
     }
