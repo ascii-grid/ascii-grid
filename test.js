@@ -7,6 +7,8 @@ const fastMax = require("fast-max");
 const isAsciiGrid = require("./src/is-ascii-grid");
 const parseAsciiGridMetaData = require("./src/parse-ascii-grid-meta");
 const parseAsciiGridData = require("./src/parse-ascii-grid-data");
+const forEachAsciiGridPoint = require("./src/for-each-ascii-grid-point");
+const calcAsciiGridStats = require("./src/calc-ascii-grid-stats");
 
 const chunk = (arr, size) => Array.from({ length: Math.ceil(arr.length / size) }, (v, i) => arr.slice(i * size, i * size + size));
 
@@ -82,6 +84,8 @@ test("reading new-line separated cells", ({ eq }) => {
   });
 
   const result = parseAsciiGridData({ data: buffer, debug_level: 0 });
+
+  eq(result.values[result.values.length - 2], result.values[result.values.length - 1]);
 
   eq(result.values.length, meta.nrows);
   eq(result.values[0].length, meta.ncols);
@@ -278,4 +282,48 @@ test("flat", async ({ eq }) => {
   eq(result.values.length, width * height);
   eq(new Set(result.values.slice(-1 * width)).size, 94);
   console.timeEnd("reading flat");
+});
+
+test("stats", ({ eq }) => {
+  console.time("stats");
+  const filepath = "./test_data/michigan_lld/michigan_lld.asc";
+  const buffer = readFileSync(filepath);
+
+  const stats = calcAsciiGridStats({ data: buffer });
+  eq(Object.keys(stats.histogram).length > 100, true);
+  delete stats.histogram;
+  eq(stats, {
+    mean: 13.685328213781924,
+    minimum: -275.890015,
+    maximum: 351.943481,
+    mode: 6.894897
+  });
+  console.timeEnd("stats");
+});
+
+test("for each", async ({ eq }) => {
+  console.time("for each");
+  const filepath = "./test_data/michigan_lld/michigan_lld.asc";
+  const buffer = readFileSync(filepath);
+
+  const start_row = 1000;
+  const start_column = 1234;
+  const end_column = 2345;
+  const end_row = 2000;
+  const setOfValues = new Set();
+  forEachAsciiGridPoint({
+    data: buffer,
+    debug_level: 0,
+    start_column,
+    end_column,
+    start_row,
+    end_row,
+    callback: ({ c, r, num }) => {
+      setOfValues.add(num);
+    }
+  });
+
+  const datalines = MICHIGAN_DATA.slice(start_row, end_row + 1).map(row => row.slice(start_column, end_column + 1));
+  eq(setOfValues.size, new Set(datalines.flat()).size);
+  console.timeEnd("for each");
 });

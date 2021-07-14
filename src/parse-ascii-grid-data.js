@@ -1,5 +1,6 @@
 const getByte = require("get-byte");
 const parseAsciiGridMetaData = require("./parse-ascii-grid-meta");
+const forEachAsciiGridPoint = require("./for-each-ascii-grid-point");
 
 const NEWLINE_CHARCODE = "\n".charCodeAt(0);
 const SPACE_CHARCODE = " ".charCodeAt(0);
@@ -27,98 +28,47 @@ module.exports = ({
   flat = false
 }) => {
   if (debug_level >= 1) console.time("[asci-grid] parse-ascii-grid-data took");
+
   const result = {};
-  const table = [];
+  const values = [];
   let row = [];
-  let numstr = "";
+  let previous_row_index;
+  let i = 0;
 
-  if (end_column < start_column) throw new Error("[ascii-grid/parse-ascii-grid-data] end_column must be greater than or equal to start_column");
-  if (end_row < start_row) throw new Error("[ascii-grid/parse-ascii-grid-data] end_row must be greater than or equal to start_row");
-
-  const read_length = Math.min(data.length, max_read_length);
-  if (debug_level >= 1) console.log("[ascii-grid/parse-ascii-grid-data] read_length:", read_length);
-
-  if (!meta) meta = parseAsciiGridMetaData({ data });
-  if (debug_level >= 1) console.log("[ascii-grid/parse-ascii-grid-data] meta:", meta);
-
-  if (!end_row) end_row = meta.nrows - 1;
-  if (debug_level >= 1) console.log("[ascii-grid/parse-ascii-grid-data] end_row:", end_row);
-
-  if (!end_column) end_column = meta.ncols - 1;
-  if (debug_level >= 1) console.log("[ascii-grid/parse-ascii-grid-data] end_column:", end_column);
-
-  let i = start_of_data_byte !== undefined ? start_of_data_byte : meta.last_metadata_byte + 1;
-  if (debug_level >= 1) console.log("[ascii-grid/parse-ascii-grid-data] i:", i);
-
-  // index of current row
-  let r = 0;
-
-  // index of current column
-  let c = 0;
-
-  // previous character
-  let prev;
-
-  while (i <= read_length) {
-    // add phantom null byte to end, because of the processing algo
-    const byte = i === read_length ? NULL_CHARCODE : getByte(data, i);
-
-    if (debug_level >= 2) console.log("[ascii-grid/parse-ascii-grid-data] i, byte:", [i, String.fromCharCode(byte)]);
-
-    if (byte === SPACE_CHARCODE || byte === NEWLINE_CHARCODE || byte === NULL_CHARCODE) {
-      if (prev === SPACE_CHARCODE || prev === NEWLINE_CHARCODE || prev === NULL_CHARCODE) {
-        // don't do anything because have reached weird edge case
-        // where file has two white space characters in a row
-        // for example, a new line + space before the start of the next row's data
-        prev = byte;
-        i++;
-        continue;
-      }
-
-      if (numstr !== "" && c >= start_column && c <= end_column) {
-        const num = parseFloat(numstr);
-        if (flat) {
-          if (r >= start_row && r <= end_row) {
-            table.push(num);
+  forEachAsciiGridPoint({
+    assume_clean,
+    debug_level,
+    data,
+    max_read_length,
+    start_of_data_byte,
+    start_column,
+    end_column,
+    start_row,
+    end_row,
+    meta,
+    callback: flat
+      ? ({ num }) => values.push(num)
+      : ({ r, num }) => {
+          if (i === 0) {
+            row.push(num);
+          } else if (r !== previous_row_index) {
+            values.push(row);
+            row = [num];
+          } else {
+            row.push(num);
           }
-        } else {
-          row.push(num);
+
+          i++;
+          previous_row_index = r;
         }
-      } else {
-        if (debug_level >= 2) console.log("[ascii-grid/parse-ascii-grid-data] skipping value at [", r, "][", c, "]");
-      }
+  });
 
-      numstr = "";
-
-      // reached end of the row
-      if (c == meta.ncols - 1) {
-        if (!flat && r >= start_row && r <= end_row) {
-          table.push(row);
-        }
-        r++;
-        c = 0;
-        row = [];
-      } else {
-        c++;
-      }
-    } else if (
-      assume_clean ||
-      byte === MINUS_CHARCODE ||
-      byte === ZERO_CHARCODE ||
-      byte === NINE_CHARCODE ||
-      byte === DOT_CHARCODE ||
-      (byte > ZERO_CHARCODE && byte < NINE_CHARCODE)
-    ) {
-      numstr += String.fromCharCode(byte);
-    } else if (debug_level >= 2) {
-      console.error("[ascii-grid/parse-ascii-grid-data]: unknown byte", [byte]);
-    }
-
-    prev = byte;
-    i++;
+  // make sure don't forget about the last row
+  if (!flat && Array.isArray(row) && row.length > 0) {
+    values.push(row);
   }
 
-  result.values = table;
+  result.values = values;
 
   if (debug_level >= 1) console.log("[ascii-grid/parse-ascii-grid-data] finishing");
 

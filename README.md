@@ -115,3 +115,66 @@ const result = await parseAsciiGridData({
   }
 */
 ```
+
+## Streaming Grid Points
+If you don't want to save a large array of all the grid points,
+but rather iterate over the points with a callback, see below:
+```javascript
+const forEachAsciiGridPoint = require("ascii-grid/for-each-ascii-grid-point");
+
+forEachAsciiGridPoint({
+  data: buffer,
+  callback: ({ c, r, num }) => {
+    console.log("row index is", r);
+    console.log("column index is", c);
+    console.log("value is", num);
+  }
+});
+```
+
+## Calculating Statistics
+If you'd like to calculate statistics for the grid points:
+```javascript
+const calcAsciiGridStats = require("ascii-grid/calc-ascii-grid-stats");
+
+const results = calcAsciiGridStats({
+  // most important arguments
+  data,
+  calcHistogram = true,
+  calcMinimum = true,
+  calcMaximum = true,
+  calcMean = true,
+  calcMedian = true,
+  calcMode = true
+
+  // other arguments
+  assume_clean = true,
+  debug_level = 0,
+  max_read_length = Infinity,
+  start_of_data_byte,
+  start_column = 0,
+  end_column, // index of last column (using zero-based index)
+  start_row = 0,
+  end_row, // index of last row (using zero-based index)
+  meta,
++}) 
+
+/*
+  results is an object
+  {
+    mean: 13.685328213781924,
+    minimum: -275.890015,
+    maximum: 351.943481,
+    mode: 6.894897,
+    histogram: {
+      '15.938934': { num: 15.938934, ct: 5 },
+      '18.938965': { num: 18.938965, ct: 3 },
+      .
+      .
+      .
+      '19.939148': { num: 19.939148, ct: 3 }
+    }
+  }
+*/
+
+```
