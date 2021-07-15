@@ -7,6 +7,7 @@ const fastMax = require("fast-max");
 const isAsciiGrid = require("./src/is-ascii-grid");
 const parseAsciiGridMetaData = require("./src/parse-ascii-grid-meta");
 const parseAsciiGridData = require("./src/parse-ascii-grid-data");
+const iterAsciiGridPoint = require("./src/iter-ascii-grid-point");
 const forEachAsciiGridPoint = require("./src/for-each-ascii-grid-point");
 const calcAsciiGridStats = require("./src/calc-ascii-grid-stats");
 
@@ -284,18 +285,42 @@ test("flat", async ({ eq }) => {
   console.timeEnd("reading flat");
 });
 
+test("iter", ({ eq }) => {
+  const filepath = "./test_data/michigan_lld/michigan_lld.asc";
+  const buffer = readFileSync(filepath);
+
+  const iterator = iterAsciiGridPoint({ data: buffer });
+  eq(iterator.next(), { value: { c: 0, r: 0, num: -9999 }, done: false });
+
+  const ncols = 4201;
+  const nrows = 5365;
+
+  let i = 1;
+  let obj;
+  while (((obj = iterator.next()), obj.done === false)) {
+    i++;
+    eq(obj.done, false);
+    eq(Object.keys(obj.value).sort(), ["c", "r", "num"].sort());
+  }
+  eq(obj.value, undefined);
+  eq(obj.done, true);
+  eq(i, ncols * nrows);
+});
+
 test("stats", ({ eq }) => {
   console.time("stats");
   const filepath = "./test_data/michigan_lld/michigan_lld.asc";
   const buffer = readFileSync(filepath);
-
   const stats = calcAsciiGridStats({ data: buffer });
   eq(Object.keys(stats.histogram).length > 100, true);
   delete stats.histogram;
   eq(stats, {
+    median: 24.926056,
+    min: -275.890015,
+    max: 351.943481,
+    sum: 304535462.0868404,
     mean: 13.685328213781924,
-    minimum: -275.890015,
-    maximum: 351.943481,
+    modes: [6.894897],
     mode: 6.894897
   });
   console.timeEnd("stats");
@@ -318,7 +343,7 @@ test("for each", async ({ eq }) => {
     end_column,
     start_row,
     end_row,
-    callback: ({ c, r, num }) => {
+    callback: ({ num }) => {
       setOfValues.add(num);
     }
   });

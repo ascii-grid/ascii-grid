@@ -133,48 +133,32 @@ forEachAsciiGridPoint({
 ```
 
 ## Calculating Statistics
-If you'd like to calculate statistics for the grid points:
+You can calculate statistics for the ASCII grid.  Calculations are made by iterating
+over the grid points in a memory-aware way, avoiding loading the whole grid into memory.
+It uses [calc-stats](https://github.com/DanielJDufour/calc-stats) for the calculations.
 ```javascript
 const calcAsciiGridStats = require("ascii-grid/calc-ascii-grid-stats");
 
-const results = calcAsciiGridStats({
-  // most important arguments
-  data,
-  calcHistogram = true,
-  calcMinimum = true,
-  calcMaximum = true,
-  calcMean = true,
-  calcMedian = true,
-  calcMode = true
-
-  // other arguments
-  assume_clean = true,
-  debug_level = 0,
-  max_read_length = Infinity,
-  start_of_data_byte,
-  start_column = 0,
-  end_column, // index of last column (using zero-based index)
-  start_row = 0,
-  end_row, // index of last row (using zero-based index)
-  meta,
-+}) 
-
+const stats = calcAsciiGridStats({ data: buffer });
 /*
-  results is an object
-  {
+  stats is
+{
+    median: 24.926056,
+    min: -275.890015,
+    max: 351.943481,
+    sum: 304535462.0868404,
     mean: 13.685328213781924,
-    minimum: -275.890015,
-    maximum: 351.943481,
+    modes: [6.894897],
     mode: 6.894897,
     histogram: {
-      '15.938934': { num: 15.938934, ct: 5 },
-      '18.938965': { num: 18.938965, ct: 3 },
+      "23.1291283": {
+        n: 23.1291283, // the actual value in numerical format
+        ct: 82 // number of times that n appears
+      },
       .
       .
       .
-      '19.939148': { num: 19.939148, ct: 3 }
     }
   }
 */
-
 ```
