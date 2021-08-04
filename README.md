@@ -27,7 +27,11 @@ isAsciiGrid({ data: buffer, debug: false });
 const parseAsciiGridMeta = require("ascii-grid/parse-ascii-grid-meta");
 
 const buffer = readFileSync('./test_data/michigan_lld/michigan_lld.asc');
-const metadata = parseAsciiGridMeta({ data: buffer, debug: false });
+const metadata = parseAsciiGridMeta({
+  data: buffer,
+  debug: false,
+  cache: true // caches metadata, but increases memory usage
+});
 /*
 {
   ncols: 4201,
@@ -46,7 +50,12 @@ const metadata = parseAsciiGridMeta({ data: buffer, debug: false });
 ```javascript
 const parseAsciiGridData = require("ascii-grid/parse-ascii-grid-data");
 
-const result = await parseAsciiGridData({ data: buffer, debug: true });
+const result = await parseAsciiGridData({
+  data: buffer,
+  debug: true,
+  cache: true // caches metadata, but increases memory usage
+  meta // optionally pass in metadata from parseAsciiGridMeta
+});
 /*
  result is an object with a values array that holds
  two-dimensional array of rows with pixel values

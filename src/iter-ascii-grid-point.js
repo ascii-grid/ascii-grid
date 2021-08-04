@@ -15,6 +15,7 @@ const NULL_CHARCODE = 0;
 
 module.exports = ({
   assume_clean = true,
+  cache = false,
   debug_level = 0,
   data,
   max_read_length = Infinity,
@@ -35,7 +36,7 @@ module.exports = ({
   const read_length = Math.min(data.length, max_read_length);
   if (debug_level >= 1) console.log("[ascii-grid/for-each-point] read_length:", read_length);
 
-  if (!meta) meta = parseAsciiGridMetaData({ data });
+  if (!meta) meta = parseAsciiGridMetaData({ cache, data, max_read_length });
   if (debug_level >= 1) console.log("[ascii-grid/for-each-point] meta:", meta);
 
   if (!end_row) end_row = meta.nrows - 1;

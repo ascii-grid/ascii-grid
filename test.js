@@ -70,6 +70,13 @@ test("reading ascii metadata", async ({ eq }) => {
   eq(meta.last_metadata_byte, 95);
 });
 
+test("caching ascii metadata", ({ eq }) => {
+  const buffer = readFileSync("./test_data/michigan_lld/michigan_lld.asc");
+  const meta = parseAsciiGridMetaData({ cache: true, data: buffer, debug_level: 0 });
+  const cached = parseAsciiGridMetaData({ cache: true, data: buffer, debug_level: 0 });
+  eq(meta === cached, true);
+});
+
 test("reading new-line separated cells", ({ eq }) => {
   const buffer = readFileSync(HAWAII_FILEPATH);
   const meta = parseAsciiGridMetaData({ data: buffer, debug_level: 0 });

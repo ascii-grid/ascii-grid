@@ -1,6 +1,10 @@
 const getByte = require("get-byte");
 
-module.exports = ({ data, debug = false, max_read_length = 500 }) => {
+const cached = new Map();
+
+module.exports = ({ cache = false, data, debug = false, max_read_length = 500 }) => {
+  if (cache && cached.has(data)) return cached.get(data);
+
   const result = {};
 
   let i = 0;
@@ -33,6 +37,9 @@ module.exports = ({ data, debug = false, max_read_length = 500 }) => {
   result.last_metadata_line = line_count - 1;
   result.last_metadata_byte = i - 1;
 
-  if (debug) console.log("result:", result);
+  if (debug) console.log("meta result:", result);
+
+  if (cache) cached.set(data, result);
+
   return result;
 };

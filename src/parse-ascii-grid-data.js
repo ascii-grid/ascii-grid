@@ -16,6 +16,7 @@ const NULL_CHARCODE = 0;
 
 module.exports = ({
   assume_clean = true,
+  cache = false,
   debug_level = 0,
   data,
   max_read_length = Infinity,
@@ -37,6 +38,7 @@ module.exports = ({
 
   forEachAsciiGridPoint({
     assume_clean,
+    cache,
     debug_level,
     data,
     max_read_length,

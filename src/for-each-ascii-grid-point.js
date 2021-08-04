@@ -2,6 +2,7 @@ const iterAsciiGridPoint = require("./iter-ascii-grid-point");
 
 module.exports = ({
   assume_clean = true,
+  cache = false,
   debug_level = 0,
   data,
   max_read_length = Infinity,
@@ -17,6 +18,7 @@ module.exports = ({
 
   const iter = iterAsciiGridPoint({
     assume_clean,
+    cache,
     debug_level,
     data,
     max_read_length,
