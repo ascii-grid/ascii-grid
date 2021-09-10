@@ -28,7 +28,7 @@ module.exports = ({
   meta,
   flat = false
 }) => {
-  if (debug_level >= 1) console.time("[asci-grid] parse-ascii-grid-data took");
+  if (debug_level >= 1) console.time("[ascii-grid] parseAsciiGridData took");
 
   const result = {};
   const values = [];
@@ -74,6 +74,6 @@ module.exports = ({
 
   if (debug_level >= 1) console.log("[ascii-grid/parse-ascii-grid-data] finishing");
 
-  if (debug_level >= 1) console.timeEnd("[asci-grid] parse-ascii-grid-data took");
+  if (debug_level >= 1) console.timeEnd("[ascii-grid] parseAsciiGridData took");
   return result;
 };

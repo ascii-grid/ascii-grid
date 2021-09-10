@@ -14,7 +14,7 @@ module.exports = ({
   meta,
   callback
 }) => {
-  if (debug_level >= 1) console.time("[asci-grid/for-each-point] took");
+  if (debug_level >= 1) console.time("[asci-grid/for-each-ascii-grid-point] took");
 
   const iter = iterAsciiGridPoint({
     assume_clean,
@@ -35,5 +35,5 @@ module.exports = ({
     callback(obj.value);
   }
 
-  if (debug_level >= 1) console.timeEnd("[asci-grid] parse-ascii-grid-data took");
+  if (debug_level >= 1) console.timeEnd("[asci-grid/for-each-ascii-grid-point] took");
 };

@@ -27,7 +27,6 @@ module.exports = ({
   meta,
   callback
 }) => {
-  if (debug_level >= 1) console.time("[asci-grid/for-each-point] took");
   let numstr = "";
 
   if (end_column < start_column) throw new Error("[ascii-grid/for-each-point] end_column must be greater than or equal to start_column");
