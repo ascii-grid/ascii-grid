@@ -1,4 +1,5 @@
 const getByte = require("get-byte");
+const getDataLength = require("./get-data-length");
 const parseAsciiGridMetaData = require("./parse-ascii-grid-meta");
 
 const NEWLINE_CHARCODE = "\n".charCodeAt(0);
@@ -29,23 +30,27 @@ module.exports = ({
 }) => {
   let numstr = "";
 
-  if (end_column < start_column) throw new Error("[ascii-grid/for-each-point] end_column must be greater than or equal to start_column");
-  if (end_row < start_row) throw new Error("[ascii-grid/for-each-point] end_row must be greater than or equal to start_row");
+  if (end_column < start_column) throw new Error("[ascii-grid/iter-each-point] end_column must be greater than or equal to start_column");
+  if (end_row < start_row) throw new Error("[ascii-grid/iter-each-point] end_row must be greater than or equal to start_row");
 
-  const read_length = Math.min(data.length, max_read_length);
-  if (debug_level >= 1) console.log("[ascii-grid/for-each-point] read_length:", read_length);
+  if (!data) throw new Error("[ascii-grid/iter-each-point] can't iterate without data!");
+
+  const data_length = getDataLength({ data });
+
+  const read_length = Math.min(data_length, max_read_length);
+  if (debug_level >= 1) console.log("[ascii-grid/iter-each-point] read_length:", read_length);
 
   if (!meta) meta = parseAsciiGridMetaData({ cache, data, max_read_length });
-  if (debug_level >= 1) console.log("[ascii-grid/for-each-point] meta:", meta);
+  if (debug_level >= 1) console.log("[ascii-grid/iter-each-point] meta:", meta);
 
   if (!end_row) end_row = meta.nrows - 1;
-  if (debug_level >= 1) console.log("[ascii-grid/for-each-point] end_row:", end_row);
+  if (debug_level >= 1) console.log("[ascii-grid/iter-each-point] end_row:", end_row);
 
   if (!end_column) end_column = meta.ncols - 1;
-  if (debug_level >= 1) console.log("[ascii-grid/for-each-point] end_column:", end_column);
+  if (debug_level >= 1) console.log("[ascii-grid/iter-each-point] end_column:", end_column);
 
   let i = start_of_data_byte !== undefined ? start_of_data_byte : meta.last_metadata_byte + 1;
-  if (debug_level >= 1) console.log("[ascii-grid/for-each-point] i:", i);
+  if (debug_level >= 1) console.log("[ascii-grid/iter-each-point] i:", i);
 
   // index of current row
   let r = 0;
@@ -63,7 +68,7 @@ module.exports = ({
         // add phantom null byte to end, because of the processing algo
         const byte = i === read_length ? NULL_CHARCODE : getByte(data, i);
 
-        if (debug_level >= 2) console.log("[ascii-grid/for-each-point] i, byte:", [i, String.fromCharCode(byte)]);
+        if (debug_level >= 2) console.log("[ascii-grid/iter-each-point] i, byte:", [i, String.fromCharCode(byte)]);
 
         if (byte === SPACE_CHARCODE || byte === NEWLINE_CHARCODE || byte === NULL_CHARCODE) {
           if (prev === SPACE_CHARCODE || prev === NEWLINE_CHARCODE || prev === NULL_CHARCODE) {
@@ -84,7 +89,7 @@ module.exports = ({
               };
             }
           } else {
-            if (debug_level >= 2) console.log("[ascii-grid/for-each-point] skipping value at [", r, "][", c, "]");
+            if (debug_level >= 2) console.log("[ascii-grid/iter-each-point] skipping value at [", r, "][", c, "]");
           }
 
           numstr = "";
@@ -106,7 +111,7 @@ module.exports = ({
         ) {
           numstr += String.fromCharCode(byte);
         } else if (debug_level >= 2) {
-          console.error("[ascii-grid/for-each-point]: unknown byte", [byte]);
+          console.error("[ascii-grid/iter-each-point]: unknown byte", [byte]);
         }
 
         prev = byte;

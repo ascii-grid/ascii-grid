@@ -1,22 +1,17 @@
-const { readFileSync } = require("fs");
 const test = require("flug");
-const toab = require("toab");
+const findAndRead = require("find-and-read");
 const fastMin = require("fast-min");
 const fastMax = require("fast-max");
 
-const isAsciiGrid = require("./src/is-ascii-grid");
-const parseAsciiGridMetaData = require("./src/parse-ascii-grid-meta");
-const parseAsciiGridData = require("./src/parse-ascii-grid-data");
-const iterAsciiGridPoint = require("./src/iter-ascii-grid-point");
-const forEachAsciiGridPoint = require("./src/for-each-ascii-grid-point");
-const calcAsciiGridStats = require("./src/calc-ascii-grid-stats");
+const parseAsciiGridMetaData = require("../src/parse-ascii-grid-meta");
+const parseAsciiGridData = require("../src/parse-ascii-grid-data");
 
 const chunk = (arr, size) => Array.from({ length: Math.ceil(arr.length / size) }, (v, i) => arr.slice(i * size, i * size + size));
 
 const cache = {};
 const getDataLinesAnotherWay = filepath => {
   if (!(filepath in cache)) {
-    const lines = readFileSync(filepath, "utf-8").trimEnd().split("\n");
+    const lines = findAndRead(filepath, { encoding: "utf-8" }).trimEnd().split("\n");
     const ncols = Number(lines.find(ln => ln.startsWith("ncols")).split(" ")[1]);
     const nums = lines
       .filter(ln => !ln.match(/^[a-z]/))
@@ -29,56 +24,16 @@ const getDataLinesAnotherWay = filepath => {
   return cache[filepath];
 };
 
-const HAWAII_FILEPATH = "./test_data/Necker_20m.asc/Necker_20m.asc";
-const HAWAII_DATA = getDataLinesAnotherWay(HAWAII_FILEPATH);
+const HAWAII_DATA = getDataLinesAnotherWay("Necker_20m.asc");
 
 if (new Set(HAWAII_DATA.map(row => row.length).slice(0, -1)).size !== 1) {
   throw new Error("Hawaii Data has inconsistent row lengths");
 }
 
-const MICHIGAN_FILEPATH = "./test_data/michigan_lld/michigan_lld.asc";
-const MICHIGAN_DATA = getDataLinesAnotherWay(MICHIGAN_FILEPATH);
-
-test("identifying ascii grid file extensions", async ({ eq }) => {
-  eq(await isAsciiGrid({ data: "michigan_lld.asc" }), true);
-  eq(await isAsciiGrid({ data: "michigan_lld.asc.tar" }), true);
-  eq(await isAsciiGrid({ data: "michigan_lld.asc.tar.gz" }), true);
-  eq(await isAsciiGrid({ data: "michigan_lld.asc.zip" }), true);
-  eq(await isAsciiGrid({ data: "michigan_lld.asc.json" }), false);
-});
-
-test("identifying ascii grid file from buffers", async ({ eq }) => {
-  const buffer = readFileSync("./test_data/michigan_lld/michigan_lld.asc");
-  const bufferIsAsciiGrid = await isAsciiGrid({ data: buffer, debug_level: 0 });
-  eq(bufferIsAsciiGrid, true);
-  eq(await isAsciiGrid({ data: Uint8Array.from(buffer) }), true);
-  eq(await isAsciiGrid({ data: await toab(buffer) }), true);
-});
-
-test("reading ascii metadata", async ({ eq }) => {
-  const buffer = readFileSync("./test_data/michigan_lld/michigan_lld.asc");
-  const meta = parseAsciiGridMetaData({ data: buffer, debug_level: 0 });
-
-  // check metadata
-  eq(meta.ncols, 4201);
-  eq(meta.nrows, 5365);
-  eq(meta.xllcenter, -88);
-  eq(meta.yllcenter, 41.62);
-  eq(meta.cellsize, 0.0008333333333);
-  eq(meta.nodata_value, -9999);
-  eq(meta.last_metadata_line, 5);
-  eq(meta.last_metadata_byte, 95);
-});
-
-test("caching ascii metadata", ({ eq }) => {
-  const buffer = readFileSync("./test_data/michigan_lld/michigan_lld.asc");
-  const meta = parseAsciiGridMetaData({ cache: true, data: buffer, debug_level: 0 });
-  const cached = parseAsciiGridMetaData({ cache: true, data: buffer, debug_level: 0 });
-  eq(meta === cached, true);
-});
+const MICHIGAN_DATA = getDataLinesAnotherWay("michigan_lld.asc");
 
 test("reading new-line separated cells", ({ eq }) => {
-  const buffer = readFileSync(HAWAII_FILEPATH);
+  const buffer = findAndRead("Necker_20m.asc");
   const meta = parseAsciiGridMetaData({ data: buffer, debug_level: 0 });
   eq(meta, {
     ncols: 5143,
@@ -107,7 +62,7 @@ test("reading new-line separated cells", ({ eq }) => {
 
 test("reading ascii values", async ({ eq }) => {
   console.time("reading ascii values");
-  const buffer = readFileSync(MICHIGAN_FILEPATH);
+  const buffer = findAndRead("michigan_lld.asc");
   const result = parseAsciiGridData({ data: buffer, debug_level: 0 });
 
   const lastRow = result.values[result.values.length - 1];
@@ -130,7 +85,7 @@ test("reading ascii values", async ({ eq }) => {
 
 test("start_row", async ({ eq }) => {
   console.time("reading box of ascii values");
-  const buffer = readFileSync(MICHIGAN_FILEPATH);
+  const buffer = findAndRead("michigan_lld.asc");
 
   const start_row = 2000;
   const result = parseAsciiGridData({
@@ -160,8 +115,7 @@ test("start_row", async ({ eq }) => {
 
 test("end_row", async ({ eq }) => {
   console.time("reading box of ascii values");
-  const filepath = "./test_data/michigan_lld/michigan_lld.asc";
-  const buffer = readFileSync(filepath);
+  const buffer = findAndRead("michigan_lld.asc");
 
   const end_row = 2000;
   const result = parseAsciiGridData({
@@ -183,7 +137,7 @@ test("end_row", async ({ eq }) => {
 });
 
 test("keypad", async ({ eq }) => {
-  const buffer = readFileSync("./test_data/keypad.asc");
+  const buffer = findAndRead("keypad.asc");
   const meta = parseAsciiGridMetaData({ data: buffer, debug_level: 0 });
   eq(meta, {
     ncols: 3,
@@ -244,8 +198,7 @@ test("keypad", async ({ eq }) => {
 
 test("bbox", async ({ eq }) => {
   console.time("reading box of ascii values");
-  const filepath = "./test_data/michigan_lld/michigan_lld.asc";
-  const buffer = readFileSync(filepath);
+  const buffer = findAndRead("michigan_lld.asc");
 
   const ncols = 4201;
   const start_row = 1000;
@@ -268,7 +221,7 @@ test("bbox", async ({ eq }) => {
 
 test("flat", async ({ eq }) => {
   console.time("reading flat");
-  const buffer = readFileSync(MICHIGAN_FILEPATH);
+  const buffer = findAndRead("michigan_lld.asc");
 
   const start_row = 100;
   const end_row = 200;
@@ -290,72 +243,4 @@ test("flat", async ({ eq }) => {
   eq(result.values.length, width * height);
   eq(new Set(result.values.slice(-1 * width)).size, 94);
   console.timeEnd("reading flat");
-});
-
-test("iter", ({ eq }) => {
-  const filepath = "./test_data/michigan_lld/michigan_lld.asc";
-  const buffer = readFileSync(filepath);
-
-  const iterator = iterAsciiGridPoint({ data: buffer });
-  eq(iterator.next(), { value: { c: 0, r: 0, num: -9999 }, done: false });
-
-  const ncols = 4201;
-  const nrows = 5365;
-
-  let i = 1;
-  let obj;
-  while (((obj = iterator.next()), obj.done === false)) {
-    i++;
-    eq(obj.done, false);
-    eq(Object.keys(obj.value).sort(), ["c", "r", "num"].sort());
-  }
-  eq(obj.value, undefined);
-  eq(obj.done, true);
-  eq(i, ncols * nrows);
-});
-
-test("stats", ({ eq }) => {
-  console.time("stats");
-  const filepath = "./test_data/michigan_lld/michigan_lld.asc";
-  const buffer = readFileSync(filepath);
-  const stats = calcAsciiGridStats({ data: buffer });
-  eq(Object.keys(stats.histogram).length > 100, true);
-  delete stats.histogram;
-  eq(stats, {
-    median: 24.926056,
-    min: -275.890015,
-    max: 351.943481,
-    sum: 304535462.0868404,
-    mean: 13.685328213781924,
-    modes: [6.894897],
-    mode: 6.894897
-  });
-  console.timeEnd("stats");
-});
-
-test("for each", async ({ eq }) => {
-  console.time("for each");
-  const filepath = "./test_data/michigan_lld/michigan_lld.asc";
-  const buffer = readFileSync(filepath);
-
-  const start_row = 1000;
-  const start_column = 1234;
-  const end_column = 2345;
-  const end_row = 2000;
-  const setOfValues = new Set();
-  forEachAsciiGridPoint({
-    data: buffer,
-    debug_level: 0,
-    start_column,
-    end_column,
-    start_row,
-    end_row,
-    callback: ({ num }) => {
-      setOfValues.add(num);
-    }
-  });
-
-  const datalines = MICHIGAN_DATA.slice(start_row, end_row + 1).map(row => row.slice(start_column, end_column + 1));
-  eq(setOfValues.size, new Set(datalines.flat()).size);
-  console.timeEnd("for each");
 });

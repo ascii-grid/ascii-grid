@@ -1,4 +1,5 @@
 const getByte = require("get-byte");
+const getDataLength = require("./get-data-length");
 
 const cached = new Map();
 
@@ -13,7 +14,9 @@ module.exports = ({ cache = false, data, debug = false, max_read_length = 500 })
   // parse metadata
   let line = null;
 
-  const read_length = Math.min(data.length, max_read_length);
+  const data_length = getDataLength({ data });
+
+  const read_length = Math.min(data_length, max_read_length);
   for (i = 0; i < read_length; i++) {
     const byte = getByte(data, i);
     const char = String.fromCharCode(byte);
