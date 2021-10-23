@@ -1,4 +1,10 @@
-module.exports = ({ data }) => {
+/**
+ * @name getDataLength
+ * @description gets the length of your ASCII Grid data.  If it's a string, return the string length.  If it's a typed array, return the length.  If it's binary (e.g. ArrayBuffer and Buffer), return the number of bytes,
+ * @param {Object} input
+ * @param {ArrayBuffer|Buffer|String} input.data - your data
+ */
+module.exports = function getDataLength({ data }) {
   if (!data) throw new Error("[ascii-grid/get-data-length] can't get length of nothing!");
   let data_length;
   if (typeof data === "string") {
