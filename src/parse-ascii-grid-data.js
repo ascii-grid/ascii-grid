@@ -1,6 +1,7 @@
 const getByte = require("get-byte");
 const parseAsciiGridMetaData = require("./parse-ascii-grid-meta");
 const forEachAsciiGridPoint = require("./for-each-ascii-grid-point");
+const countDigits = require("./count-digits");
 
 const NEWLINE_CHARCODE = "\n".charCodeAt(0);
 const SPACE_CHARCODE = " ".charCodeAt(0);
@@ -12,7 +13,15 @@ const NULL_CHARCODE = 0;
 
 /*
   Notes: .asc files can end with a newline, null byte, or number
+
+  Maybe we should return what the file ended with
+  and if numbers have fixed value length (number of digits)
 */
+
+/**
+ * @name parseAsciiGridData
+ * @returns
+ */
 
 module.exports = ({
   assume_clean = true,
@@ -26,7 +35,8 @@ module.exports = ({
   start_row = 0,
   end_row, // index of last row (using zero-based index)
   meta,
-  flat = false
+  flat = false,
+  check_fixed_digits = false // return fixed_digits (the number of fixed digits if applicable)
 }) => {
   if (debug_level >= 1) console.time("[ascii-grid] parseAsciiGridData took");
 
@@ -35,6 +45,23 @@ module.exports = ({
   let row = [];
   let previous_row_index;
   let i = 0;
+
+  // undefined = initial
+  // null = inconsistent/no
+  // Number = current
+  let fixed_digits;
+
+  const updateFixedDigits = ({ num, str, meta }) => {
+    if (check_fixed_digits && num !== meta.nodata_value) {
+      const num_digits = countDigits(str);
+      // console.log({ str, num, num_digits, fixed_digits });
+      if (fixed_digits === undefined) {
+        fixed_digits = num_digits;
+      } else if (fixed_digits !== null && num_digits !== fixed_digits) {
+        fixed_digits = null;
+      }
+    }
+  };
 
   forEachAsciiGridPoint({
     assume_clean,
@@ -49,8 +76,12 @@ module.exports = ({
     end_row,
     meta,
     callback: flat
-      ? ({ num }) => values.push(num)
-      : ({ r, num }) => {
+      ? ({ meta, num, str }) => {
+          updateFixedDigits({ num, str, meta });
+          values.push(num);
+        }
+      : ({ meta, r, num, str }) => {
+          updateFixedDigits({ num, str, meta });
           if (i === 0) {
             row.push(num);
           } else if (r !== previous_row_index) {
@@ -69,6 +100,8 @@ module.exports = ({
   if (!flat && Array.isArray(row) && row.length > 0) {
     values.push(row);
   }
+
+  if (check_fixed_digits) result.fixed_digits = fixed_digits;
 
   result.values = values;
 

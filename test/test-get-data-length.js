@@ -5,6 +5,11 @@ const getDataLength = require("../src/get-data-length");
 
 const buf = findAndRead("Necker_20m.asc");
 
+test("get data length of string", async ({ eq }) => {
+  const len = getDataLength({ data: findAndRead("keypad.asc", { encoding: "utf-8" }) });
+  eq(len, 103);
+});
+
 test("get data length of buffer", async ({ eq }) => {
   const len = getDataLength({ data: buf });
   eq(len, 150678989);

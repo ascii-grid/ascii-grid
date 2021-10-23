@@ -3,7 +3,7 @@ const getDataLength = require("./get-data-length");
 
 const cached = new Map();
 
-module.exports = ({ cache = false, data, debug = false, max_read_length = 500 }) => {
+module.exports = ({ cache = false, data, debug_level = 0, max_read_length = 500 }) => {
   if (cache && cached.has(data)) return cached.get(data);
 
   const result = {};
@@ -15,11 +15,22 @@ module.exports = ({ cache = false, data, debug = false, max_read_length = 500 })
   let line = null;
 
   const data_length = getDataLength({ data });
+  if (debug_level >= 1) console.log("[ascii-grid] data_length: " + data_length);
 
   const read_length = Math.min(data_length, max_read_length);
+  if (debug_level >= 1) console.log("[ascii-grid] read_length: " + read_length);
+
+  const data_type = typeof data;
+
   for (i = 0; i < read_length; i++) {
-    const byte = getByte(data, i);
-    const char = String.fromCharCode(byte);
+    let char;
+    if (data_type === "string") {
+      char = data[i];
+    } else {
+      const byte = getByte(data, i);
+      char = String.fromCharCode(byte);
+    }
+
     if (char === "\n") {
       const [param, value] = line.split(" ");
       result[param] = Number.parseFloat(value);
@@ -40,7 +51,7 @@ module.exports = ({ cache = false, data, debug = false, max_read_length = 500 })
   result.last_metadata_line = line_count - 1;
   result.last_metadata_byte = i - 1;
 
-  if (debug) console.log("meta result:", result);
+  if (debug_level >= 1) console.log("meta result:", result);
 
   if (cache) cached.set(data, result);
 

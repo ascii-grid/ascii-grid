@@ -1,7 +1,29 @@
 const calcStats = require("calc-stats");
 const parseAsciiGridMeta = require("./parse-ascii-grid-meta");
 const iterAsciiGridPoint = require("./iter-ascii-grid-point");
-
+/**
+ * @name calcAsciiGridStats
+ * @description Calculate Statistics for a Given ASCII Grid.  Basically runs [calc-stats](https://www.npmjs.com/package/calc-stats) on the data.
+ * @param {Boolean} [assume_clean=true] - assume that cell values are valid numbers and don't include null bytes
+ * @param {Number} [debug_level=0] - 0 prevents all logging, 1+ logging to help debugging
+ * @param {ArrayBuffer|Buffer|String} data - your ASCII grid data
+ * @param {Number} [max_read_length=Infinity] - how much to read of the ASCII grid file
+ * @param {Number} [start_of_data_byte] - where the metadata ends and to start reading the cell values
+ * @param {Number} [start_column=0] - which column to start reading from. zero is the furthest left column.
+ * @param {Number} [end_column] - at which column to stop reading. defaults to reading to the end of the grid
+ * @param {Number} [start_row] - which row to start reading from. zero is the top/first row.
+ * @param {Number} [end_row] - which row to stop reading from. defaults to reading through the last row.
+ * @param {Object} [meta] - metadata object from [parseAsciiGridMeta](#parseAsciiGridMeta)
+ * @param {Boolean} [calcHistogram=true] - calculate a histogram of cell values
+ * @param {Boolean} [calcMax=true] - calculate the maximum of all the valid cell values
+ * @param {Boolean} [calcMean=true] - calculate the mean of all the valid cell values
+ * @param {Boolean} [calcMedian=true] - calculate the median of all the valid cell values
+ * @param {Boolean} [calcMin=true] - calculate the min of all the valid cell values
+ * @param {Boolean} [calcMode=true] - calculate the most common cell value (ignoring no-data values)
+ * @param {Boolean} [calcMode=true] - calculate array of the most common cell values (ignoring no-data values)
+ * @param {Boolean} [calcSum=true] - calculate the sum of all cell values (ignoring no-data values)
+ * @returns {CalcStatsResults} Results object from running [calc-stats](https://github.com/danieljdufour/calc-stats) over the data
+ */
 function calcAsciiGridStats({
   assume_clean = true,
   debug_level = 0,

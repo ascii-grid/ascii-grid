@@ -136,66 +136,6 @@ test("end_row", async ({ eq }) => {
   console.timeEnd("reading box of ascii values");
 });
 
-test("keypad", async ({ eq }) => {
-  const buffer = findAndRead("keypad.asc");
-  const meta = parseAsciiGridMetaData({ data: buffer, debug_level: 0 });
-  eq(meta, {
-    ncols: 3,
-    nrows: 3,
-    xllcenter: -88,
-    yllcenter: 41.62,
-    cellsize: 0.0008333333333,
-    nodata_value: 0,
-    last_metadata_line: 5,
-    last_metadata_byte: 85
-  });
-
-  const result = parseAsciiGridData({
-    data: buffer,
-    debug_level: 0,
-    start_column: 0,
-    end_column: 2,
-    start_row: 0,
-    end_row: 2
-  });
-  eq(result, {
-    values: [
-      [1, 2, 3],
-      [4, 5, 6],
-      [7, 8, 9]
-    ]
-  });
-
-  // clipping
-  const result2 = parseAsciiGridData({
-    data: buffer,
-    debug_level: 0,
-    start_column: 1,
-    end_column: 1,
-    start_row: 1,
-    end_row: 1
-  });
-  eq(result2, {
-    values: [[5]]
-  });
-
-  // top left box
-  const result3 = parseAsciiGridData({
-    data: buffer,
-    debug_level: 0,
-    start_column: 0,
-    end_column: 1,
-    start_row: 0,
-    end_row: 1
-  });
-  eq(result3, {
-    values: [
-      [1, 2],
-      [4, 5]
-    ]
-  });
-});
-
 test("bbox", async ({ eq }) => {
   console.time("reading box of ascii values");
   const buffer = findAndRead("michigan_lld.asc");

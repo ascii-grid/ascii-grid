@@ -53,7 +53,7 @@ const parseAsciiGridData = require("ascii-grid/parse-ascii-grid-data");
 const result = await parseAsciiGridData({
   data: buffer,
   debug: true,
-  cache: true // caches metadata, but increases memory usage
+  cache: true, // caches metadata, but increases memory usage
   meta // optionally pass in metadata from parseAsciiGridMeta
 });
 /*

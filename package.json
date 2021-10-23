@@ -4,17 +4,20 @@
   "description": "Identify and Read an ARC/INFO ASCII Grid",
   "main": "src/index.js",
   "files": [
+    "src/calc-ascii-grid-stats.js",
+    "src/count-digits.js",
+    "src/for-each-ascii-grid-point.js",
+    "src/get-data-length.js",
     "src/index.js",
     "src/is-ascii-grid.js",
+    "src/iter-ascii-grid-point.js",
     "src/parse-ascii-grid-data.js",
     "src/parse-ascii-grid-meta.js",
-    "src/calc-ascii-grid-stats.js",
-    "src/for-each-ascii-grid-point.js",
-    "src/iter-ascii-grid-point.js",
-    "src/get-data-length.js"
+    "src/write-ascii-grid.js"
   ],
   "scripts": {
-    "format": "npx prettier --arrow-parens=avoid --print-width=160 --trailing-comma=none --write test/*.js src/*.js",
+    "document": "documentation build src/** --config documentation.yml -f html -o docs",
+    "format": "prettier --arrow-parens=avoid --print-width=160 --trailing-comma=none --write test/*.js src/*.js",
     "test": "for f in ./test/*; do node $f; done"
   },
   "repository": {
@@ -47,6 +50,9 @@
   },
   "dependencies": {
     "calc-stats": "^0.0.2",
-    "get-byte": "0.0.0"
+    "documentation": "^13.2.5",
+    "get-byte": "0.0.0",
+    "get-depth": "^0.0.3",
+    "prettier": "^2.4.1"
   }
 }

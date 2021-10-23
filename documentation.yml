@@ -1,0 +1,5 @@
+paths:
+    ArrayBuffer: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer
+    Buffer: https://nodejs.org/api/buffer.html
+    CalcStatsResults: https://github.com/danieljdufour/calc-stats#basic-usage
+    File: 'https://developer.mozilla.org/en-US/docs/Web/API/File'
