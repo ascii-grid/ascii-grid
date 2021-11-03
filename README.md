@@ -208,7 +208,7 @@ const result = writeAsciiGrid({
   
   // whether to include a newline at the end of the file
   // default is true
-  trailing_newline: false
+  trailing_newline: false,
   
   // the number of digits after the decimal
   // doesn't apply to nodata_values
