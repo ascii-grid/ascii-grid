@@ -23,7 +23,7 @@ const NULL_CHARCODE = 0;
  * @returns
  */
 
-module.exports = ({
+module.exports = function parseAsciiGridData({
   assume_clean = true,
   cache = false,
   debug_level = 0,
@@ -37,7 +37,7 @@ module.exports = ({
   meta,
   flat = false,
   check_fixed_digits = false // return fixed_digits (the number of fixed digits if applicable)
-}) => {
+}) {
   if (debug_level >= 1) console.time("[ascii-grid] parseAsciiGridData took");
 
   const result = {};

@@ -1,3 +1,4 @@
+const { wrapNextFunction } = require("iter-fun");
 const getByte = require("get-byte");
 const getDataLength = require("./get-data-length");
 const parseAsciiGridMetaData = require("./parse-ascii-grid-meta");
@@ -73,122 +74,118 @@ module.exports = ({
   let prev;
 
   if (data_type === "string") {
-    return {
-      next: () => {
-        let ret;
-        while (i <= read_length) {
-          const char = i === read_length ? "\x00" : data[i];
-          if (debug_level >= 2) console.log("[ascii-grid/iter-each-point] i, char:", JSON.stringify([i, char]));
-          if (char === " " || char === "\n" || char === "\x00") {
-            if (prev === " " || prev === "\n" || prev === "\x00") {
-              // don't do anything because have reached weird edge case
-              // where file has two white space characters in a row
-              // for example, a new line + space before the start of the next row's data
-              prev = char;
-              i++;
-              continue;
-            }
-
-            if (numstr !== "" && c >= start_column && c <= end_column) {
-              const num = parseFloat(numstr);
-              if (r >= start_row && r <= end_row) {
-                ret = {
-                  value: { c, r, num, str: numstr, meta },
-                  done: false
-                };
-              }
-            } else {
-              if (debug_level >= 2) console.log("[ascii-grid/iter-each-point] skipping value at [", r, "][", c, "]");
-            }
-
-            numstr = "";
-
-            // reached end of the row
-            if (c == meta.ncols - 1) {
-              r++;
-              c = 0;
-            } else {
-              c++;
-            }
-          } else if (assume_clean || "-0123456789.".includes(char)) {
-            numstr += char;
-          } else if (debug_level >= 2) {
-            console.error("[ascii-grid/iter-each-point]: unknown char", [char]);
+    return wrapNextFunction(function next() {
+      let ret;
+      while (i <= read_length) {
+        const char = i === read_length ? "\x00" : data[i];
+        if (debug_level >= 2) console.log("[ascii-grid/iter-each-point] i, char:", JSON.stringify([i, char]));
+        if (char === " " || char === "\n" || char === "\x00") {
+          if (prev === " " || prev === "\n" || prev === "\x00") {
+            // don't do anything because have reached weird edge case
+            // where file has two white space characters in a row
+            // for example, a new line + space before the start of the next row's data
+            prev = char;
+            i++;
+            continue;
           }
 
-          prev = char;
-          i++;
-          if (ret) return ret;
+          if (numstr !== "" && c >= start_column && c <= end_column) {
+            const num = parseFloat(numstr);
+            if (r >= start_row && r <= end_row) {
+              ret = {
+                value: { c, r, num, str: numstr, meta },
+                done: false
+              };
+            }
+          } else {
+            if (debug_level >= 2) console.log("[ascii-grid/iter-each-point] skipping value at [", r, "][", c, "]");
+          }
+
+          numstr = "";
+
+          // reached end of the row
+          if (c == meta.ncols - 1) {
+            r++;
+            c = 0;
+          } else {
+            c++;
+          }
+        } else if (assume_clean || "-0123456789.".includes(char)) {
+          numstr += char;
+        } else if (debug_level >= 2) {
+          console.error("[ascii-grid/iter-each-point]: unknown char", [char]);
         }
-        return {
-          value: { meta },
-          done: true
-        };
+
+        prev = char;
+        i++;
+        if (ret) return ret;
       }
-    };
+      return {
+        value: { meta },
+        done: true
+      };
+    });
   } else {
-    return {
-      next: () => {
-        let ret;
-        while (i <= read_length) {
-          // add phantom null byte to end, because of the processing algo
-          const byte = i === read_length ? NULL_CHARCODE : getByte(data, i);
+    return wrapNextFunction(function next() {
+      let ret;
+      while (i <= read_length) {
+        // add phantom null byte to end, because of the processing algo
+        const byte = i === read_length ? NULL_CHARCODE : getByte(data, i);
 
-          if (debug_level >= 2) console.log("[ascii-grid/iter-each-point] i, byte:", [i, String.fromCharCode(byte)]);
+        if (debug_level >= 2) console.log("[ascii-grid/iter-each-point] i, byte:", [i, String.fromCharCode(byte)]);
 
-          if (byte === SPACE_CHARCODE || byte === NEWLINE_CHARCODE || byte === NULL_CHARCODE) {
-            if (prev === SPACE_CHARCODE || prev === NEWLINE_CHARCODE || prev === NULL_CHARCODE) {
-              // don't do anything because have reached weird edge case
-              // where file has two white space characters in a row
-              // for example, a new line + space before the start of the next row's data
-              prev = byte;
-              i++;
-              continue;
-            }
-
-            if (numstr !== "" && c >= start_column && c <= end_column) {
-              const num = parseFloat(numstr);
-              if (r >= start_row && r <= end_row) {
-                ret = {
-                  value: { c, r, num, str: numstr, meta },
-                  done: false
-                };
-              }
-            } else {
-              if (debug_level >= 2) console.log("[ascii-grid/iter-each-point] skipping value at [", r, "][", c, "]");
-            }
-
-            numstr = "";
-
-            // reached end of the row
-            if (c == meta.ncols - 1) {
-              r++;
-              c = 0;
-            } else {
-              c++;
-            }
-          } else if (
-            assume_clean ||
-            byte === MINUS_CHARCODE ||
-            byte === ZERO_CHARCODE ||
-            byte === NINE_CHARCODE ||
-            byte === DOT_CHARCODE ||
-            (byte > ZERO_CHARCODE && byte < NINE_CHARCODE)
-          ) {
-            numstr += String.fromCharCode(byte);
-          } else if (debug_level >= 2) {
-            console.error("[ascii-grid/iter-each-point]: unknown byte", [byte]);
+        if (byte === SPACE_CHARCODE || byte === NEWLINE_CHARCODE || byte === NULL_CHARCODE) {
+          if (prev === SPACE_CHARCODE || prev === NEWLINE_CHARCODE || prev === NULL_CHARCODE) {
+            // don't do anything because have reached weird edge case
+            // where file has two white space characters in a row
+            // for example, a new line + space before the start of the next row's data
+            prev = byte;
+            i++;
+            continue;
           }
 
-          prev = byte;
-          i++;
-          if (ret) return ret;
+          if (numstr !== "" && c >= start_column && c <= end_column) {
+            const num = parseFloat(numstr);
+            if (r >= start_row && r <= end_row) {
+              ret = {
+                value: { c, r, num, str: numstr, meta },
+                done: false
+              };
+            }
+          } else {
+            if (debug_level >= 2) console.log("[ascii-grid/iter-each-point] skipping value at [", r, "][", c, "]");
+          }
+
+          numstr = "";
+
+          // reached end of the row
+          if (c == meta.ncols - 1) {
+            r++;
+            c = 0;
+          } else {
+            c++;
+          }
+        } else if (
+          assume_clean ||
+          byte === MINUS_CHARCODE ||
+          byte === ZERO_CHARCODE ||
+          byte === NINE_CHARCODE ||
+          byte === DOT_CHARCODE ||
+          (byte > ZERO_CHARCODE && byte < NINE_CHARCODE)
+        ) {
+          numstr += String.fromCharCode(byte);
+        } else if (debug_level >= 2) {
+          console.error("[ascii-grid/iter-each-point]: unknown byte", [byte]);
         }
-        return {
-          value: { meta },
-          done: true
-        };
+
+        prev = byte;
+        i++;
+        if (ret) return ret;
       }
-    };
+      return {
+        value: { meta },
+        done: true
+      };
+    });
   }
 };

@@ -53,6 +53,7 @@
     "documentation": "^13.2.5",
     "get-byte": "0.0.0",
     "get-depth": "^0.0.3",
+    "iter-fun": "^0.1.1",
     "prettier": "^2.4.1"
   }
 }

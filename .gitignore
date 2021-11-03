@@ -105,3 +105,4 @@ dist
 
 test_data/*/*
 *bak*
+pnpm-lock.yaml

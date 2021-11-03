@@ -55,9 +55,16 @@ module.exports = function forEachAsciiGridPoint({
     meta
   });
 
-  let obj;
-  while (((obj = iter.next()), obj.done === false)) {
-    callback(obj.value);
+  try {
+    for (let value of iter) {
+      callback(value);
+    }
+  } catch (error) {
+    // probably in Internet Explorer
+    let obj;
+    while (((obj = iter.next()), obj.done === false)) {
+      callback(obj.value);
+    }
   }
 
   if (debug_level >= 1) console.timeEnd("[asci-grid/for-each-ascii-grid-point] took");
