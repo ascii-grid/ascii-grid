@@ -1,5 +1,5 @@
 # ascii-grid: beta
-> Identify and Read an ARC/INFO ASCII Grid
+> Identify, Read, and Write an ARC/INFO ASCII Grid
 
 # motivation
 I do a lot of client-side geoprocessing (see [geoblaze](http://github.com/geotiff/geoblaze)) and wanted to add support for .asc files.
@@ -170,4 +170,52 @@ const stats = calcAsciiGridStats({ data: buffer });
     }
   }
 */
+```
+
+## Writing an ASCII Grid
+```js
+const writeAsciiGrid = require("ascii-grid/write-ascii-grid");
+
+const result = writeAsciiGrid({
+  // you can also pass in the data as one flattened row
+  data: [
+    [123, 456, ...], // first row
+    [789, 1011, ...], // second row
+    // ...
+  ],
+  
+  // number of columns
+  ncols: 4201,
+  
+  // number of rows
+  nrows: 5365,
+
+  // alternatively you can use xllcorner and yllcorner
+  xllcenter: -88,
+  yllcenter: 41.62,
+
+  cellsize: 0.0008333333333,
+  
+   /****** THE FOLLOWING IS OPTIONAL ******/
+  
+  // throw an error if necessary metadata is missing
+  // default is true
+  strict: false,
+  
+  // set to 1+ for increased logging
+  // default is 0
+  debug_level: 2,
+  
+  // whether to include a newline at the end of the file
+  // default is true
+  trailing_newline: false
+  
+  // the number of digits after the decimal
+  // doesn't apply to nodata_values
+  // default is no rounding. 
+  // for more explanation of the rounding please see the documentation for JavaScript's toFixed function [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed)
+  fixed_digits: 6,
+  
+  nodata_value: -9999
+});
 ```
