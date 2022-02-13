@@ -12,25 +12,26 @@ npm install ascii-grid
 ```
 
 # usage
-## identify ascii grid files
+## identifying ascii grid files
 isAsciiGrid identifies ASCII GRID files in the following formats: ArrayBuffer, Buffer, DataView, Promise, String, and Uint8Array
 ```javascript
-const isAsciiGrid = require("ascii-grid/is-ascii-grid");
+const isAsciiGrid = require("ascii-grid/src/is-ascii-grid");
 
 const buffer = readFileSync('./test_data/michigan_lld/michigan_lld.asc');
 isAsciiGrid({ data: buffer, debug: false });
 // true
 ```
 
-## parse ascii grid metadata
+## parsing ascii grid metadata
 ```javascript
-const parseAsciiGridMeta = require("ascii-grid/parse-ascii-grid-meta");
+const parseAsciiGridMeta = require("ascii-grid/src/parse-ascii-grid-meta");
 
 const buffer = readFileSync('./test_data/michigan_lld/michigan_lld.asc');
 const metadata = parseAsciiGridMeta({
   data: buffer,
   debug: false,
-  cache: true // caches metadata, but increases memory usage
+  cache: true, // caches metadata, but increases memory usage,
+  raw: false // true returns numbers as raw strings
 });
 /*
 {
@@ -46,9 +47,9 @@ const metadata = parseAsciiGridMeta({
 */
 ```
 
-## Reading Pixel Values
+## reading pixel values
 ```javascript
-const parseAsciiGridData = require("ascii-grid/parse-ascii-grid-data");
+const parseAsciiGridData = require("ascii-grid/src/parse-ascii-grid-data");
 
 const result = await parseAsciiGridData({
   data: buffer,
@@ -74,11 +75,11 @@ const result = await parseAsciiGridData({
 */
 ```
 
-## Reading Pixel Values within Bounding Box
+## reading pixel values within a bounding box
 You can specify a bounding box to read from by specifying the zero-based index
 values of the first and last row, and first and last column for each row
 ```javascript
-const parseAsciiGridData = require("ascii-grid/parse-ascii-grid-data");
+const parseAsciiGridData = require("ascii-grid/src/parse-ascii-grid-data");
 
 const result = await parseAsciiGridData({
   data: buffer,
@@ -110,7 +111,7 @@ const result = await parseAsciiGridData({
 Sometimes you may require the data to be returned in a one-dimensional flat array
 instead of split up into rows.  To do so, set flat to true like below
 ```javascript
-const parseAsciiGridData = require("ascii-grid/parse-ascii-grid-data");
+const parseAsciiGridData = require("ascii-grid/src/parse-ascii-grid-data");
 
 const result = await parseAsciiGridData({
   data: buffer,
@@ -125,11 +126,11 @@ const result = await parseAsciiGridData({
 */
 ```
 
-## Streaming Grid Points
+## streaming grid points
 If you don't want to save a large array of all the grid points,
 but rather iterate over the points with a callback, see below:
 ```javascript
-const forEachAsciiGridPoint = require("ascii-grid/for-each-ascii-grid-point");
+const forEachAsciiGridPoint = require("ascii-grid/src/for-each-ascii-grid-point");
 
 forEachAsciiGridPoint({
   data: buffer,
@@ -141,7 +142,7 @@ forEachAsciiGridPoint({
 });
 ```
 
-## Calculating Statistics
+## calculating statistics
 You can calculate statistics for the ASCII grid.  Calculations are made by iterating
 over the grid points in a memory-aware way, avoiding loading the whole grid into memory.
 It uses [calc-stats](https://github.com/DanielJDufour/calc-stats) for the calculations.
@@ -172,9 +173,9 @@ const stats = calcAsciiGridStats({ data: buffer });
 */
 ```
 
-## Writing an ASCII Grid
+## writing an ASCII Grid
 ```js
-const writeAsciiGrid = require("ascii-grid/write-ascii-grid");
+const writeAsciiGrid = require("ascii-grid/src/write-ascii-grid");
 
 const result = writeAsciiGrid({
   // you can also pass in the data as one flattened row
@@ -218,4 +219,36 @@ const result = writeAsciiGrid({
   
   nodata_value: -9999
 });
+```
+
+## calculating the bounding box
+You can calculate the bounding box of the ASCII Grid using floating-point arithmetic.
+```js
+import calcAsciiGridBoundingBox from "ascii-grid/src/calc-ascii-grid-bounding-box";
+
+calcAsciiGridBoundingBox({
+  data, // array buffer, buffer, or string representing ascii grid file
+
+  // if no meta object is provided,
+  // calcAsciiGridBoundingBox will internally call parseAsciiGridMeta
+  meta,
+
+  // max_read_length is an optional parameter passed to parseAsciiGridMeta
+  max_read_length
+});
+[491501, 2556440, 594634.0933000001, 2645315.3392]
+```
+
+## calculating the precise bounding box
+If precision is more important than speed, you can calculate the precise bounding box
+of the the ASCII Grid avoiding floating-point arithmetic errors.
+```js
+import calcAsciiGridPreciseBoundingBox from "ascii-grid/src/calc-ascii-grid-precise-bounding-box";
+
+calcAsciiGridBoundingBox({
+  data, // required
+  meta, // optional
+  max_read_length // optional
+})
+["491501", "2556440", "594634.0933", "2645315.3392"]
 ```

@@ -3,7 +3,7 @@ const getDataLength = require("./get-data-length");
 
 const cached = new Map();
 
-module.exports = ({ cache = false, data, debug_level = 0, max_read_length = 500 }) => {
+module.exports = ({ cache = false, data, debug_level = 0, max_read_length = 500, raw = false }) => {
   if (cache && cached.has(data)) return cached.get(data);
 
   const result = {};
@@ -33,7 +33,11 @@ module.exports = ({ cache = false, data, debug_level = 0, max_read_length = 500 
 
     if (char === "\n") {
       const [param, value] = line.split(" ");
-      result[param] = Number.parseFloat(value);
+      if (raw) {
+        result[param] = value;
+      } else {
+        result[param] = Number.parseFloat(value);
+      }
       line = null;
       line_count++;
     } else if (line === null) {

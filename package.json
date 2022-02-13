@@ -4,6 +4,8 @@
   "description": "Identify and Read an ARC/INFO ASCII Grid",
   "main": "src/index.js",
   "files": [
+    "src/calc-ascii-grid-bounding-box.js",
+    "src/calc-ascii-grid-precise-bounding-box.js",
     "src/calc-ascii-grid-stats.js",
     "src/count-digits.js",
     "src/for-each-ascii-grid-point.js",
@@ -54,6 +56,7 @@
     "get-byte": "0.0.0",
     "get-depth": "^0.0.3",
     "iter-fun": "^0.1.1",
+    "preciso": "^0.2.0",
     "prettier": "^2.4.1"
   }
 }
