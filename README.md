@@ -11,6 +11,9 @@ This package was created to make it easy to read specific areas of an ASCII Grid
 npm install ascii-grid
 ```
 
+# docs
+https://ascii-grid.github.io/ascii-grid/
+
 # usage
 ## identifying ascii grid files
 isAsciiGrid identifies ASCII GRID files in the following formats: ArrayBuffer, Buffer, DataView, Promise, String, and Uint8Array
