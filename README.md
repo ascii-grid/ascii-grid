@@ -107,7 +107,7 @@ const result = await parseAsciiGridData({
 */
 ```
 
-## Reading Pixel Values into a Flat Array
+## reading pixel values into a flat array
 Sometimes you may require the data to be returned in a one-dimensional flat array
 instead of split up into rows.  To do so, set flat to true like below
 ```javascript
