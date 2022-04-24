@@ -248,7 +248,7 @@ of the the ASCII Grid avoiding floating-point arithmetic errors.
 ```js
 import calcAsciiGridPreciseBoundingBox from "ascii-grid/src/calc-ascii-grid-precise-bounding-box";
 
-calcAsciiGridBoundingBox({
+calcAsciiGridPreciseBoundingBox({
   data, // required
   meta, // optional
   max_read_length // optional
