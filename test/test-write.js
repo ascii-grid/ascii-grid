@@ -19,6 +19,9 @@ const writeAsciiGrid = require("../src/write-ascii-grid");
     const { fixed_digits, values } = parseAsciiGridData({ data: str, check_fixed_digits: true });
 
     const written = writeAsciiGrid({ data: values, debug_level: 0, fixed_digits, trailing_newline, ...meta });
-    eq(str, written.asc);
+    eq(written.asc, str);
+
+    const written_3d = writeAsciiGrid({ data: [values], debug_level: 0, fixed_digits, trailing_newline, ...meta });
+    eq(written_3d.asc, str);
   });
 });

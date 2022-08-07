@@ -1,3 +1,4 @@
+const flatIter = require("flat-iter");
 const getDepth = require("get-depth");
 
 /**
@@ -17,7 +18,7 @@ const getDepth = require("get-depth");
  * @param {Boolean} trailing_newline - whether to include a newline at the end of the file
  * @param {Number} fixed_digits - the number of digits after the decimal. default is no rounding. ignores nodata_values. for more explanation of the rounding please see the documentation for JavaScript's toFixed function [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed)
  */
-module.exports = ({
+function writeAsciiGrid({
   data,
   ncols,
   nrows,
@@ -31,7 +32,7 @@ module.exports = ({
   debug_level = 0,
   trailing_newline = true,
   fixed_digits
-}) => {
+}) {
   if (!Array.isArray(data)) {
     throw new Error("[ascii-grid] data does not appear to be an array");
   }
@@ -91,41 +92,51 @@ module.exports = ({
 
   let asc = header.join("\n");
 
+  // assuming row-major order
   if (depth === 1) {
     if (typeof ncols !== "number") {
       throw new Error("[ascii-grid] unable to determine row breaks in a flat array without ncols");
     }
-    // flat array
-    let c = 0;
-
-    // start with a new line
-    asc += "\n" + data[0];
-    for (let i = 0; i < data.length; i++) {
-      c++;
-
-      // start a new row
-      if (c === ncols) {
-        asc += "\n";
-        c === 0;
-      } else {
-        asc += " ";
-      }
-
-      let n = data[i];
-      if (use_fixed_digits && n !== nodata_value) n = n.toFixed(fixed_digits);
-      asc += n;
+  } else if (depth === 2) {
+    if (typeof ncols !== "number") {
+      // assuming row-major order
+      ncols = data[0].length;
     }
-  } else if (depth == 2) {
-    if (debug_level >= 3) console.log("[ascii-grid] data:", data);
-    data.forEach(row => {
-      if (debug_level >= 4) console.log("[ascii-grid] row:", row);
+  }
+
+  const iter = flatIter(data, depth);
+
+  let c = 0;
+  let it;
+  asc += "\n" + iter.next().value;
+  while ((it = iter.next()) && it.done === false) {
+    c++;
+
+    // start a new row
+    if (c === ncols) {
       asc += "\n";
-      if (use_fixed_digits) row = row.map(n => (n === nodata_value ? n : n.toFixed(fixed_digits)));
-      asc += row.join(" ");
-    });
+      c = 0;
+    } else {
+      asc += " ";
+    }
+
+    let n = it.value;
+    if (use_fixed_digits && n !== nodata_value) n = n.toFixed(fixed_digits);
+    asc += n;
   }
 
   if (trailing_newline) asc += "\n";
 
   return { asc };
-};
+}
+
+if (typeof define === "function" && define.amd) {
+  define(function () {
+    return writeAsciiGrid;
+  });
+}
+
+if (typeof module === "object") {
+  module.exports = writeAsciiGrid;
+  module.exports.default = writeAsciiGrid;
+}
