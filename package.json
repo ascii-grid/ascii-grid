@@ -46,7 +46,7 @@
   "devDependencies": {
     "fast-max": "0.0.0",
     "fast-min": "0.0.0",
-    "find-and-read": "^1.0.2",
+    "find-and-read": "^1.2.0",
     "flat-iter": "^0.2.0",
     "flug": "^1.1.0",
     "toab": "^1.0.2"
@@ -54,10 +54,10 @@
   "dependencies": {
     "calc-stats": "^0.0.2",
     "documentation": "^13.2.5",
-    "get-byte": "0.0.0",
+    "get-byte": "^0.0.0",
     "get-depth": "^0.0.3",
-    "iter-fun": "^0.1.1",
-    "preciso": "^0.2.0",
-    "prettier": "^2.4.1"
+    "iter-fun": "^0.1.2",
+    "preciso": "^0.7.1",
+    "prettier": "^2.7.1"
   }
 }

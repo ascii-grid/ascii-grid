@@ -18,8 +18,11 @@ const writeAsciiGrid = require("../src/write-ascii-grid");
     const meta = parseAsciiGridMeta({ data: str });
     const { fixed_digits, values } = parseAsciiGridData({ data: str, check_fixed_digits: true });
 
+    const start = performance.now();
     const written = writeAsciiGrid({ data: values, debug_level: 0, fixed_digits, trailing_newline, ...meta });
+    const end = performance.now();
     eq(written.asc, str);
+    console.log("took " + ((end - start) / 1000).toFixed(7) + "s");
 
     const written_3d = writeAsciiGrid({ data: [values], debug_level: 0, fixed_digits, trailing_newline, ...meta });
     eq(written_3d.asc, str);
