@@ -1,8 +1,8 @@
 const test = require("flug");
 const findAndRead = require("find-and-read");
-const parseAsciiGridMeta = require("../src/parse-ascii-grid-meta");
-const parseAsciiGridData = require("../src/parse-ascii-grid-data");
-const writeAsciiGrid = require("../src/write-ascii-grid");
+const parseAsciiGridMeta = require("../../src/parse-ascii-grid-meta");
+const parseAsciiGridData = require("../../src/parse-ascii-grid-data");
+const writeAsciiGrid = require("../../src/write-ascii-grid");
 
 // we don't test Neck_20m.asc because it is poorly formed
 // where each value is separated by a new line instead of a space

@@ -1,18 +1,21 @@
 const flatIter = require("flat-iter");
 const getDepth = require("get-depth");
 
+const isArray = require("./is-array.js");
+const isNumString = require("./is-num-string.js");
+
 /**
  * @name writeAsciiGrid
  * @description write ASCII-Grid text file (.asc)
  * @param {Number[]} data - a numerical array of cell values.  can be provided as one flat array of an array of rows.
- * @param {Number} ncols - number of columns of cells
- * @param {Number} nrows - number of rows of cells
- * @param {Number} xllcenter - x value of center of lower left cell
- * @param {Number} xllcorner - x value of lower left corner of lower left cell
- * @param {Number} yllcenter - y value of center of lower left cell
- * @param {Number} yllcorner - y value of lower left corner of lower left cell
- * @param {Number} cellsize - the height and width of the cell in units of the spatial reference system
- * @param {Number} nodata_value - the no data value. cells without data should be skipped when visualizing or calculating statistics.
+ * @param {Number|String} ncols - number of columns of cells
+ * @param {Number|String} nrows - number of rows of cells
+ * @param {Number|String} xllcenter - x value of center of lower left cell
+ * @param {Number|String} xllcorner - x value of lower left corner of lower left cell
+ * @param {Number|String} yllcenter - y value of center of lower left cell
+ * @param {Number|String} yllcorner - y value of lower left corner of lower left cell
+ * @param {Number|String} cellsize - the height and width of the cell in units of the spatial reference system
+ * @param {Number|String} nodata_value - the no data value. cells without data should be skipped when visualizing or calculating statistics.
  * @param {Boolean} strict - if strict, throw an error when necessary metadata is missing
  * @param {Boolean} debug_level- set to 1+ for increased logging
  * @param {Boolean} trailing_newline - whether to include a newline at the end of the file
@@ -33,7 +36,7 @@ function writeAsciiGrid({
   trailing_newline = true,
   fixed_digits
 }) {
-  if (!Array.isArray(data)) {
+  if (!isArray(data)) {
     throw new Error("[ascii-grid] data does not appear to be an array");
   }
 
@@ -51,6 +54,10 @@ function writeAsciiGrid({
 
   const depth = getDepth(data);
   if (debug_level >= 1) console.log("[ascii-grid] depth: " + depth);
+
+  if (typeof ncols === "string") ncols = Number(ncols);
+  if (typeof nrows === "string") nrows = Number(nrows);
+  if (typeof nodata_value === "string") nodata_value = Number(nodata_value);
 
   if (ncols === undefined) {
     if (depth === 1 && typeof nrows == "number") {
@@ -86,9 +93,13 @@ function writeAsciiGrid({
     throw new Error("[ascii-grid] unable to write origin because don't have both (x/y)llcorner or both (x/y)llcenter.");
   }
 
-  if (typeof cellsize === "number") header.push("cellsize " + cellsize);
+  if (typeof cellsize === "number" || isNumString(cellsize)) {
+    header.push("cellsize " + cellsize);
+  }
 
-  if (typeof nodata_value === "number") header.push("nodata_value " + nodata_value);
+  if (typeof nodata_value === "number" || isNumString(nodata_value)) {
+    header.push("nodata_value " + nodata_value);
+  }
 
   let asc = header.join("\n");
 
@@ -106,9 +117,13 @@ function writeAsciiGrid({
 
   const iter = flatIter(data, depth);
 
+  asc += "\n";
+
   let c = 0;
   let it;
-  asc += "\n" + iter.next().value;
+  let n = iter.next().value;
+  if (use_fixed_digits && n !== nodata_value) n = n.toFixed(fixed_digits);
+  asc += n;
   while ((it = iter.next()) && it.done === false) {
     c++;
 

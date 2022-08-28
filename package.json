@@ -3,7 +3,9 @@
   "version": "1.7.0",
   "description": "Identify and Read an ARC/INFO ASCII Grid",
   "main": "src/index.js",
+  "types": "./src/index.d.ts",
   "files": [
+    "src/index.d.ts",
     "src/calc-ascii-grid-bounding-box.js",
     "src/calc-ascii-grid-precise-bounding-box.js",
     "src/calc-ascii-grid-stats.js",
@@ -11,7 +13,9 @@
     "src/for-each-ascii-grid-point.js",
     "src/get-data-length.js",
     "src/index.js",
+    "src/is-array.js",
     "src/is-ascii-grid.js",
+    "src/is-num-string.js",
     "src/iter-ascii-grid-point.js",
     "src/parse-ascii-grid-data.js",
     "src/parse-ascii-grid-meta.js",
@@ -19,8 +23,11 @@
   ],
   "scripts": {
     "document": "documentation build src/** --config documentation.yml -f html -o docs",
-    "format": "prettier --arrow-parens=avoid --print-width=160 --trailing-comma=none --write test/*.js src/*.js",
-    "test": "for f in ./test/*; do node $f; done"
+    "f": "npm run format",
+    "format": "prettier --arrow-parens=avoid --print-width=160 --trailing-comma=none --write test/*/*.*s src/*.js",
+    "test": "npm run test:cjs && npm run test:ts",
+    "test:cjs": "for f in ./test/cjs/*.js; do node $f; done",
+    "test:ts": "for f in ./test/ts/*.ts; do npx ts-node $f; done"
   },
   "repository": {
     "type": "git",
@@ -35,7 +42,8 @@
     "info",
     "geospatial",
     "gis",
-    "grid"
+    "grid",
+    "map"
   ],
   "author": "Daniel J. Dufour",
   "license": "CC0-1.0",
@@ -44,12 +52,13 @@
   },
   "homepage": "https://github.com/DanielJDufour/ascii-grid#readme",
   "devDependencies": {
+    "@types/node": "^18.7.13",
     "fast-max": "0.0.0",
     "fast-min": "0.0.0",
     "find-and-read": "^1.2.0",
     "flat-iter": "^0.2.0",
-    "flug": "^1.1.0",
-    "toab": "^1.0.2"
+    "flug": "^2.3.1",
+    "toab": "^2.3.0"
   },
   "dependencies": {
     "calc-stats": "^0.0.2",

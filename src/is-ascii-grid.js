@@ -1,6 +1,4 @@
-const getByte = require("get-byte");
-
-module.exports = async ({ data, debug = false, max_read_length = 500 }) => {
+async function isAsciiGrid({ data, debug = false, max_read_length = 500 }) {
   if (data instanceof Promise) data = await data;
 
   if (typeof Buffer !== "undefined" && Buffer.isBuffer(data)) {
@@ -39,4 +37,7 @@ module.exports = async ({ data, debug = false, max_read_length = 500 }) => {
   } else {
     return false;
   }
-};
+}
+
+module.exports = isAsciiGrid;
+module.exports.default = isAsciiGrid;

@@ -1,7 +1,7 @@
 const test = require("flug");
 const findAndRead = require("find-and-read");
 const toab = require("toab");
-const isAsciiGrid = require("../src/is-ascii-grid");
+const isAsciiGrid = require("../../src/is-ascii-grid");
 
 test("identifying ascii grid file extensions", async ({ eq }) => {
   eq(await isAsciiGrid({ data: "michigan_lld.asc" }), true);

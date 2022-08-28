@@ -1,7 +1,7 @@
 const test = require("flug");
 const findAndRead = require("find-and-read");
 const toab = require("toab");
-const getDataLength = require("../src/get-data-length");
+const getDataLength = require("../../src/get-data-length");
 
 const buf = findAndRead("Necker_20m.asc");
 

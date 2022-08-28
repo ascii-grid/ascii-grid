@@ -24,7 +24,7 @@ const NULL_CHARCODE = 0;
   Notes: .asc files can end with a newline, null byte, or number
 */
 
-module.exports = ({
+function iterAsciiGridPoint({
   assume_clean = true,
   cache = false,
   debug_level = 0,
@@ -35,9 +35,8 @@ module.exports = ({
   end_column, // index of last column (using zero-based index)
   start_row = 0,
   end_row, // index of last row (using zero-based index)
-  meta,
-  callback
-}) => {
+  meta
+}) {
   let numstr = "";
 
   if (end_column < start_column) throw new Error("[ascii-grid/iter-each-point] end_column must be greater than or equal to start_column");
@@ -188,4 +187,7 @@ module.exports = ({
       };
     });
   }
-};
+}
+
+module.exports = iterAsciiGridPoint;
+module.exports.default = iterAsciiGridPoint;

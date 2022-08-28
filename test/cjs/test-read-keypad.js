@@ -1,8 +1,8 @@
 const test = require("flug");
 const findAndRead = require("find-and-read");
 
-const parseAsciiGridMetaData = require("../src/parse-ascii-grid-meta");
-const parseAsciiGridData = require("../src/parse-ascii-grid-data");
+const parseAsciiGridMetaData = require("../../src/parse-ascii-grid-meta");
+const parseAsciiGridData = require("../../src/parse-ascii-grid-data");
 
 test("source type equivalency", async ({ eq }) => {
   const buffer = findAndRead("keypad.asc");

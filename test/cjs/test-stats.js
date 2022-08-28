@@ -1,7 +1,7 @@
 const test = require("flug");
 const toab = require("toab");
 const findAndRead = require("find-and-read");
-const calcAsciiGridStats = require("../src/calc-ascii-grid-stats");
+const calcAsciiGridStats = require("../../src/calc-ascii-grid-stats");
 
 test("stats", ({ eq }) => {
   console.time("stats");

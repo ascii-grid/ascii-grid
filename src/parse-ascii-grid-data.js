@@ -1,15 +1,5 @@
-const getByte = require("get-byte");
-const parseAsciiGridMetaData = require("./parse-ascii-grid-meta");
 const forEachAsciiGridPoint = require("./for-each-ascii-grid-point");
 const countDigits = require("./count-digits");
-
-const NEWLINE_CHARCODE = "\n".charCodeAt(0);
-const SPACE_CHARCODE = " ".charCodeAt(0);
-const MINUS_CHARCODE = "-".charCodeAt(0);
-const ZERO_CHARCODE = "0".charCodeAt(0);
-const NINE_CHARCODE = "9".charCodeAt(0);
-const DOT_CHARCODE = ".".charCodeAt(0);
-const NULL_CHARCODE = 0;
 
 /*
   Notes: .asc files can end with a newline, null byte, or number

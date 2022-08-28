@@ -3,8 +3,8 @@ const findAndRead = require("find-and-read");
 const fastMin = require("fast-min");
 const fastMax = require("fast-max");
 
-const parseAsciiGridMetaData = require("../src/parse-ascii-grid-meta");
-const parseAsciiGridData = require("../src/parse-ascii-grid-data");
+const parseAsciiGridMetaData = require("../../src/parse-ascii-grid-meta");
+const parseAsciiGridData = require("../../src/parse-ascii-grid-data");
 
 const chunk = (arr, size) => Array.from({ length: Math.ceil(arr.length / size) }, (v, i) => arr.slice(i * size, i * size + size));
 

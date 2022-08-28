@@ -1,7 +1,7 @@
 const test = require("flug");
 const findAndRead = require("find-and-read");
-const calcAsciiGridPreciseBoundingBox = require("../src/calc-ascii-grid-precise-bounding-box.js");
-const parseAsciiGridMeta = require("../src/parse-ascii-grid-meta.js");
+const calcAsciiGridPreciseBoundingBox = require("../../src/calc-ascii-grid-precise-bounding-box.js");
+const parseAsciiGridMeta = require("../../src/parse-ascii-grid-meta.js");
 
 test("calc precise bbox from buffer with centers", async ({ eq }) => {
   const buffer = findAndRead("michigan_lld.asc");

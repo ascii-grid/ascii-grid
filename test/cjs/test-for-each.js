@@ -1,6 +1,6 @@
 const test = require("flug");
 const findAndRead = require("find-and-read");
-const forEachAsciiGridPoint = require("../src/for-each-ascii-grid-point");
+const forEachAsciiGridPoint = require("../../src/for-each-ascii-grid-point");
 
 test("for each", async ({ eq }) => {
   console.time("for each");

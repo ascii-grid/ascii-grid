@@ -1,10 +1,10 @@
-const test = require("flug");
-const findAndRead = require("find-and-read");
-const parseAsciiGridMetaData = require("../src/parse-ascii-grid-meta");
+import test from "flug";
+import findAndRead from "find-and-read";
+import { parseAsciiGridMeta } from "../../src";
 
 test("reading ascii metadata", async ({ eq }) => {
   const buffer = findAndRead("michigan_lld.asc");
-  const meta = parseAsciiGridMetaData({ data: buffer, debug_level: 0 });
+  const meta = parseAsciiGridMeta({ data: buffer, debug_level: 0 });
 
   // check metadata
   eq(meta.ncols, 4201);
@@ -19,14 +19,14 @@ test("reading ascii metadata", async ({ eq }) => {
 
 test("caching ascii metadata", ({ eq }) => {
   const buffer = findAndRead("michigan_lld.asc");
-  const meta = parseAsciiGridMetaData({ cache: true, data: buffer, debug_level: 0 });
-  const cached = parseAsciiGridMetaData({ cache: true, data: buffer, debug_level: 0 });
+  const meta = parseAsciiGridMeta({ cache: true, data: buffer, debug_level: 0 });
+  const cached = parseAsciiGridMeta({ cache: true, data: buffer, debug_level: 0 });
   eq(meta === cached, true);
 });
 
 test("reading ascii metadata raw", async ({ eq }) => {
   const buffer = findAndRead("michigan_lld.asc");
-  const meta = parseAsciiGridMetaData({ data: buffer, debug_level: 0, raw: true });
+  const meta = parseAsciiGridMeta({ data: buffer, debug_level: 0, raw: true });
 
   // check metadata
   eq(meta.ncols, "4201");

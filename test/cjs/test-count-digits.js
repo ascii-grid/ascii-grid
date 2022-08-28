@@ -1,5 +1,5 @@
 const test = require("flug");
-const countDigits = require("../src/count-digits.js");
+const countDigits = require("../../src/count-digits.js");
 
 [
   ["123", 0],
