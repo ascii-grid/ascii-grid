@@ -41,7 +41,11 @@ test("writing typed array", ({ eq }) => {
 });
 
 test("writing strings", ({ eq }) => {
+  const start_test = performance.now();
+  const s = performance.now();
   const data = new Uint8Array(101 * 101).fill(2);
+  const e = performance.now();
+  console.log("creating array " + ((e - s) / 1000).toFixed(7) + "s");
   const meta = {
     cellsize: "0.0000277777778",
     nodata_value: undefined,
@@ -51,10 +55,14 @@ test("writing strings", ({ eq }) => {
     debug_level: 0,
     trailing_newline: true,
     fixed_digits: undefined,
-    xllcorner: 9.0010573796,
-    yllcorner: 51.9985704523422
+    xllcorner: "9.0010573796",
+    yllcorner: "51.9985704523422"
   };
+  const start = performance.now();
   const { asc } = writeAsciiGrid({ data, ...meta });
-  console.log("written:", asc.substring(0, 1000));
+  const end = performance.now();
+  console.log("took " + ((end - start) / 1000).toFixed(7) + "s");
   eq(asc.includes("cellsize"), true);
+  const end_test = performance.now();
+  console.log("test took " + ((end_test - start_test) / 1000).toFixed(7) + "s");
 });

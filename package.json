@@ -15,6 +15,7 @@
     "src/index.js",
     "src/is-array.js",
     "src/is-ascii-grid.js",
+    "src/is-num-like.js",
     "src/is-num-string.js",
     "src/iter-ascii-grid-point.js",
     "src/parse-ascii-grid-data.js",

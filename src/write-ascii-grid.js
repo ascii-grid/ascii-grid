@@ -2,7 +2,7 @@ const flatIter = require("flat-iter");
 const getDepth = require("get-depth");
 
 const isArray = require("./is-array.js");
-const isNumString = require("./is-num-string.js");
+const isNumLike = require("./is-num-like.js");
 
 /**
  * @name writeAsciiGrid
@@ -83,21 +83,21 @@ function writeAsciiGrid({
   if (typeof ncols === "number") header.push("ncols " + ncols);
   if (typeof nrows === "number") header.push("nrows " + nrows);
 
-  if (typeof xllcorner === "number" && typeof yllcorner === "number") {
+  if (isNumLike(xllcorner) && isNumLike(yllcorner)) {
     header.push("xllcorner " + xllcorner);
     header.push("yllcorner " + yllcorner);
-  } else if (typeof xllcenter === "number" && typeof yllcenter === "number") {
+  } else if (isNumLike(xllcenter) && isNumLike(yllcenter)) {
     header.push("xllcenter " + xllcenter);
     header.push("yllcenter " + yllcenter);
   } else if (strict) {
     throw new Error("[ascii-grid] unable to write origin because don't have both (x/y)llcorner or both (x/y)llcenter.");
   }
 
-  if (typeof cellsize === "number" || isNumString(cellsize)) {
+  if (isNumLike(cellsize)) {
     header.push("cellsize " + cellsize);
   }
 
-  if (typeof nodata_value === "number" || isNumString(nodata_value)) {
+  if (isNumLike(nodata_value)) {
     header.push("nodata_value " + nodata_value);
   }
 
